@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>By-李金珂小朋友</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="format-detection" content="telephone=no"/>
+    <link rel="stylesheet" href="ljkUpload.css">
+</head>
+<body>
+<div class="headImg-popup">
+    <div class="upload-image-box text-center color-white fz16rem mt1rem">
+        <!--拖动缩放区域-->
+        <div class="move-image hasImg"></div>
+        <!--切割区域-->
+        <div class="clip-image"></div>
+    </div>
+    <div class="mt1rem">
+        <!--滑竿-->
+        <input type="range" max="3.0" min="0.1" value="1.0" step="0.01" class="inp inp-block" id="range">
+    </div>
+    <aside class="text-center mt2rem">
+        <input type="file" accept="image/*" multiple id="file-btn" class="hidden">
+        <button class="btn btn-blue upload-select-btn">选择图片</button>
+        <button class="btn btn-primary upload-upload-btn">立即上传</button>
+    </aside>
+</div>
+<section>
+    <ul class="showImage">
+    </ul>
+</section>
+</body>
+<script src="../jquery-1.11.3.js"></script>
+<script src="LjkUpload.js"></script>
+<script>
+    $(function () {
+        var ljkUpload = new LjkUpload($(".headImg-popup"));
+        var $file_btn = $(".upload-select-btn"),     //文件选择按钮
+                $move_image = $(".move-image"),    //裁剪框
+                $range = $("#range");               //滑块
+
+        //拖拽
+        ljkUpload.moveImage({
+            ele:$move_image,
+            isDown:false,                  //鼠标是否按下
+            isPc:ljkUpload.isPc()          //是否为pc
+        });
+        //预览
+        ljkUpload.showImage({
+            fileSelectBtn:$file_btn,
+            fileBtn:$("input[type='file']"),
+            showEle:$move_image,
+            isImage:true,          //是文件 false  默认 true
+            maxSize:1024*100            //文件最大限制  KB   默认1M
+        });
+        //缩放
+        ljkUpload.rangeToScale({
+            range:$range,
+            ele:$move_image
+        });
+        //裁剪
+        ljkUpload.clipImage({
+            clipSuccess:function( Src ){       //clipSuccess  裁剪成功 返回 base64图片
+                var imgNode = $("<li style='margin: 20px'><img src='"+ Src +"'></li>");
+                $(".showImage").append( imgNode );
+            }
+        })
+    })
+
+</script>
+</html>
