@@ -20,7 +20,6 @@ ljkUpLoadAlert(msg, onHideHandler ,title, showTime)
 /**
  *
  * @param ele      拖拽区域
- * @param isDown   是否按下
  * @param isPc     是否为pc
  */
 moveImage(options)
