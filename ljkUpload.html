@@ -59,7 +59,7 @@
         });
         //裁剪
         ljkUpload.clipImage({
-            clip:function( Src ){       //clipSuccess  裁剪成功 返回 base64图片
+            clipSuccess:function( Src ){       //clipSuccess  裁剪成功 返回 base64图片
                 var imgNode = $("<li style='margin: 20px'><img src='"+ Src +"'></li>");
                 $(".showImage").append( imgNode );
             }
