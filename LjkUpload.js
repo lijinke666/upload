@@ -1,7 +1,7 @@
 /**
  * Created by Administrator on 2016/7/13.
  * By: 李金珂小朋友
- * 文件上传小组件 支持图片 和视频
+ * 图片裁剪上传小组件
  * v 0.2
  *  ：）
  */
@@ -81,25 +81,29 @@
             options.fileSelectBtn.on("click", function () {
                 options.fileBtn.click();
             });
-    },
+        },
 
         //拖拽图片
         /**
          *
          * @param ele      拖拽区域
-         * @param isDown   是否按下
          * @param isPc     是否为pc
          */
         moveImage: function ( options ) {
             if( typeof options != "object" ){
                 return
             }
+            var options = $.extend({
+                ele:$('.move-image'),
+                isPc:true
+            },options)
             var mouseOffsetX = 0,
-                mouseOffsetY = 0;
+                mouseOffsetY = 0,
+                isDown = false;
             //按下
             options.ele.on("mousedown touchstart", function ( e ) {
                 var touche = options.isPc ? e : event.targetTouches[0];
-                options.isDown = true;
+                    isDown = true;
                 mouseOffsetX = touche.pageX - parseInt(options.ele.get(0).offsetLeft);
                 mouseOffsetY = touche.pageY - parseInt(options.ele.get(0).offsetTop);
             });
@@ -109,7 +113,7 @@
                 var mouseX = 0,
                     mouseY = 0;
                 var touche = options.isPc ? e : event.targetTouches[0];
-                if ( options.isDown === true ) {
+                if ( isDown === true ) {
                     mouseX = touche.pageX - mouseOffsetX;
                     mouseY = touche.pageY - mouseOffsetY;
                     options.ele.css({
@@ -121,12 +125,12 @@
             //弹起
             options.ele.on("mouseup touchend", function ( e ) {
                 e.preventDefault();
-                options.isDown = false;
+                isDown = false;
             });
             //移出
             options.ele.on("mouseout", function ( e ) {
                 e.preventDefault();
-                options.isDown = false;
+                isDown = false;
             });
         },
 
@@ -344,7 +348,7 @@
 
                 var Src = canvas.toDataURL( "images/png" );
                 if( typeof  options.clipSuccess != "function" ){
-                    _this.ljkUpLoadAlert("请使用clipSuccess回调函数:(");
+                    throw new Error("请使用clipSuccess回调函数:(");
                     return;
                 }
                 options.clipSuccess( Src );

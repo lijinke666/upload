@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>By-李金珂小朋友</title>
+    <title>实例</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="format-detection" content="telephone=no"/>
     <link rel="stylesheet" href="ljkUpload.css">
@@ -30,7 +30,7 @@
     </ul>
 </section>
 </body>
-<script src="../jquery-1.11.3.js"></script>
+<script src="http://libs.baidu.com/jquery/1.9.1/jquery.min.js"></script>
 <script src="LjkUpload.js"></script>
 <script>
     $(function () {
@@ -41,8 +41,7 @@
 
         //拖拽
         ljkUpload.moveImage({
-            ele:$move_image,
-            isDown:false,                  //鼠标是否按下
+            ele:$move_image,                //拖拽区域
             isPc:ljkUpload.isPc()          //是否为pc
         });
         //预览
@@ -60,7 +59,7 @@
         });
         //裁剪
         ljkUpload.clipImage({
-            clipSuccess:function( Src ){       //clipSuccess  裁剪成功 返回 base64图片
+            clip:function( Src ){       //clipSuccess  裁剪成功 返回 base64图片
                 var imgNode = $("<li style='margin: 20px'><img src='"+ Src +"'></li>");
                 $(".showImage").append( imgNode );
             }
