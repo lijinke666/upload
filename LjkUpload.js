@@ -345,21 +345,21 @@
                 success:function(){}
             };
             var options = $.extend( defaults , options );
-            this.moveImage({
+            _this.moveImage({
                 ele:options.uploadImageBox,
                 isPc:_this.isPc()
             });
-            this.showImage({
+            _this.showImage({
                 fileSelectBtn: options.fileSelectBtn,
                 fileBtn: options.fileBtn,
                 showEle: options.uploadImageBox,
                 maxSize: options.maxSize
             });
-            this.rangeToScale({
+            _this.rangeToScale({
                 range: options.range,
                 ele: options.uploadImageBox
             });
-            this.clipImage({
+            _this.clipImage({
                 uploadBtn: options.uploadBtn,
                 uploadImageBox: options.uploadImageBox,
                 clipImage: options.clipImage,
