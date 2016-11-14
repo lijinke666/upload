@@ -36,32 +36,47 @@
     $(function () {
         var ljkUpload = new LjkUpload($(".headImg-popup"));
         var $file_btn = $(".upload-select-btn"),     //文件选择按钮
-                $move_image = $(".move-image"),    //裁剪框
-                $range = $("#range");               //滑块
+            $upload_upload_btn = $('.upload-upload-btn'),  //文件上传按钮
+            $move_image = $(".move-image"),    //图片移动区域
+            $clip_image = $(".clip-image"),    //图片裁剪区域
+            $range = $("#range");               //滑块
 
-        //拖拽
-        ljkUpload.moveImage({
-            ele:$move_image,                //拖拽区域
-            isPc:ljkUpload.isPc()          //是否为pc
-        });
-        //预览
-        ljkUpload.showImage({
+//        //拖拽
+//        ljkUpload.moveImage({
+//            ele:$move_image,                //拖拽区域
+//            isPc:ljkUpload.isPc()          //是否为pc
+//        });
+//        //预览
+//        ljkUpload.showImage({
+//            fileSelectBtn:$file_btn,
+//            fileBtn:$("input[type='file']"),
+//            showEle:$move_image,
+//            maxSize:1024*100            //文件最大限制  KB   默认1M
+//        });
+//        //缩放
+//        ljkUpload.rangeToScale({
+//            range:$range,
+//            ele:$move_image
+//        });
+//        //裁剪
+//        ljkUpload.clipImage({
+//            clipSuccess:function( Src ){       //clipSuccess  裁剪成功 返回 base64图片
+//                var imgNode = $("<li style='margin: 20px'><img src='"+ Src +"'></li>");
+//                $(".showImage").append( imgNode );
+//            }
+//        })
+
+        //综合使用
+        ljkUpload.upLoad({
             fileSelectBtn:$file_btn,
             fileBtn:$("input[type='file']"),
-            showEle:$move_image,
-            isImage:true,          //是文件 false  默认 true
-            maxSize:1024*100            //文件最大限制  KB   默认1M
-        });
-        //缩放
-        ljkUpload.rangeToScale({
+            uploadBtn:$upload_upload_btn,
+            uploadImageBox:$move_image,
+            clipImage:$clip_image,
             range:$range,
-            ele:$move_image
-        });
-        //裁剪
-        ljkUpload.clipImage({
-            clipSuccess:function( Src ){       //clipSuccess  裁剪成功 返回 base64图片
-                var imgNode = $("<li style='margin: 20px'><img src='"+ Src +"'></li>");
-                $(".showImage").append( imgNode );
+            maxSize:1024,
+            success:function( src ){
+                console.log(src);
             }
         })
     })

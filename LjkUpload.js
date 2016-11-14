@@ -145,15 +145,11 @@
          */
         showImage: function ( options ) {
             var defaults = {
-                isImage:true,
                 maxSize:1024
             };
             var options = $.extend( defaults, options );
             if( typeof options != "object" ){
                 return
-            }
-            if(typeof  options.isfile == 'undefined'){
-                options.isfile = false;
             }
             var _this = this;
             _this.selectImg( options );
@@ -173,7 +169,7 @@
 
                 files.forEach( function ( file, i ) {
                     //jpeg png gif    "/images/jpeg"     i对大小写不敏感
-                    var fileType =  options.isImage ? /\/(?:jpeg|png|gif)/i : /\/(?:mp4|rmvb|mp4|wmv|rm|3gp)/i;          //图片或者 视频
+                    var fileType = /\/(?:jpeg|png|gif)/i ;          //图片
                     var type = file.type.split("/").pop();
                     if ( !fileType.test( file.type ) ) {
                         _this.ljkUpLoadAlert("不支持"+type+"格式的视频文件哟");
@@ -206,33 +202,11 @@
                     reader.onload = function () {
                         _this.delete($(".removeLoading"));
                         var result = this.result;        //读取失败时  null   否则就是读取的结果
-                        if( options.isImage === true ){
-                            var image = new Image();
-                            image.src = result;
-                            options.fileSelectBtn.addClass("success-linear")
-                            options.showEle.html('').append(image).removeClass("hasImg");
-                        }else if( options.isImage === false ){
-                            var video = $("<video id='video' controls><source src='"+result+"' type='video/"+type+"'></video>");
-                            var networkState = 0,   //尚未初始化
-                                videoReaderState = 0 ;  //视频就绪状态
-                            if(networkState == 2 || networkState == 0 || networkState ==3){
-                                _this.ljkUpLoadAnimate("视频初始化");
-                            }
-                            //0 = NETWORK_EMPTY - 音频/视频尚未初始化
-                            // 1 = NETWORK_IDLE - 音频/视频是活动的且已选取资源，但并未使用网络
-                            // 2 = NETWORK_LOADING - 浏览器正在下载数据
-                            // 3 = NETWORK_NO_SOURCE - 未找到音频/视频来源
-                            //readyState == 4  视频已就绪
-                            var State = setInterval(function(){
-                                networkState = video.get(0).networkState;
-                                videoReaderState = video.get(0).readyState;
-                                if( networkState !=0 &&  networkState !=2 &&  networkState !=3  && videoReaderState == 4 ){
-                                   _this.delete($('.removeLoading'));
-                                    clearInterval(State);
-                                    options.showEle.append(video);
-                                }
-                            },1000);
-                        }
+                        var image = new Image();
+                        image.src = result;
+                        options.fileSelectBtn.addClass("success-linear");
+                        options.showEle.html('').append(image).removeClass("hasImg");
+        
                        var $range = $('input[type="range"]'),
                             scale = Number($range.val());
                             options.showEle.get(0).onmousewheel = function(e){
@@ -326,6 +300,7 @@
                 range:$("#range")
             };
             var options = $.extend( defaults , options );
+
             //选择文件
 
             options.uploadBtn.on("click",function(){
@@ -353,6 +328,46 @@
                 }
                 options.clipSuccess( Src );
             })
+        },
+        upLoad:function( options ){
+            var _this = this;
+            if( typeof options != "object" ){
+                return
+            }
+            var defaults = {
+                fileSelectBtn:$(".upload-select-btn"),
+                fileBtn:$("input[type='file']"),
+                uploadBtn:$(".upload-upload-btn"),
+                uploadImageBox:$(".move-image"),
+                clipImage:$(".clip-image"),
+                range:$("#range"),
+                maxSize:1024,
+                success:function(){}
+            };
+            var options = $.extend( defaults , options );
+            this.moveImage({
+                ele:options.uploadImageBox,
+                isPc:_this.isPc()
+            });
+            this.showImage({
+                fileSelectBtn: options.fileSelectBtn,
+                fileBtn: options.fileBtn,
+                showEle: options.uploadImageBox,
+                maxSize: options.maxSize
+            });
+            this.rangeToScale({
+                range: options.range,
+                ele: options.uploadImageBox
+            });
+            this.clipImage({
+                uploadBtn: options.uploadBtn,
+                uploadImageBox: options.uploadImageBox,
+                clipImage: options.clipImage,
+                range: options.clipImage,
+                clipSuccess:function( Src ){
+                    options.success( Src )
+                }
+            });
         }
     };
     window['LjkUpload'] = LjkUpload;
