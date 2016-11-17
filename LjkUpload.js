@@ -329,6 +329,10 @@
                 options.clipSuccess( Src );
             })
         },
+        /**
+         * 
+         * @param options
+         */
         upLoad:function( options ){
             var _this = this;
             if( typeof options != "object" ){
