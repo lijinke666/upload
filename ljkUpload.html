@@ -76,7 +76,8 @@
             range:$range,
             maxSize:1024,
             success:function( src ){
-                console.log(src);
+                var imgNode = $("<li style='margin: 20px'><img src='"+ Src +"'></li>");
+                $(".showImage").append( imgNode );
             }
         })
     })
