@@ -324,54 +324,9 @@
                 var Src = canvas.toDataURL( "images/png" );
                 if( typeof  options.clipSuccess != "function" ){
                     throw new Error("请使用clipSuccess回调函数:(");
-                    return;
                 }
                 options.clipSuccess( Src );
             })
-        },
-        /**
-         *
-         * @param options
-         */
-        upLoad:function( options ){
-            var _this = this;
-            if( typeof options != "object" ){
-                return
-            }
-            var defaults = {
-                fileSelectBtn:$(".upload-select-btn"),
-                fileBtn:$("input[type='file']"),
-                uploadBtn:$(".upload-upload-btn"),
-                uploadImageBox:$(".move-image"),
-                clipImage:$(".clip-image"),
-                range:$("#range"),
-                maxSize:1024,
-                success:function(){}
-            };
-            var options = $.extend( defaults , options );
-            _this.moveImage({
-                ele:options.uploadImageBox,
-                isPc:_this.isPc()
-            });
-            _this.showImage({
-                fileSelectBtn: options.fileSelectBtn,
-                fileBtn: options.fileBtn,
-                showEle: options.uploadImageBox,
-                maxSize: options.maxSize
-            });
-            _this.rangeToScale({
-                range: options.range,
-                ele: options.uploadImageBox
-            });
-            _this.clipImage({
-                uploadBtn: options.uploadBtn,
-                uploadImageBox: options.uploadImageBox,
-                clipImage: options.clipImage,
-                range: options.clipImage,
-                clipSuccess:function( Src ){
-                    options.success( Src )
-                }
-            });
         }
     };
     window['LjkUpload'] = LjkUpload;
