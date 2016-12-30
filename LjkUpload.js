@@ -172,13 +172,13 @@
                     var fileType = /\/(?:jpeg|png|gif)/i ;          //图片
                     var type = file.type.split("/").pop();
                     if ( !fileType.test( file.type ) ) {
-                        _this.ljkUpLoadAlert("不支持"+type+"格式的视频文件哟");
+                        _this.ljkUpLoadAlert("不支持"+type+"格式的图片哟");
                         return;
                     }
                     if( options.maxSize!= 'undefined' && typeof options.maxSize == 'number'){
                         var fileSize = file.size / 1024;
                         if( fileSize > options.maxSize ){
-                            _this.ljkUpLoadAlert("抱歉,文件最大为 "+options.maxSize+" KB");
+                            _this.ljkUpLoadAlert("抱歉,图片最大为 "+options.maxSize+" KB");
                             return;
                         }
                     }
@@ -301,7 +301,7 @@
             };
             var options = $.extend( defaults , options );
 
-            //选择文件
+            //选择图片
 
             options.uploadBtn.on("click",function(){
                 if(options.uploadImageBox.hasClass("hasImg")){
@@ -326,6 +326,75 @@
                     throw new Error("请使用clipSuccess回调函数:(");
                 }
                 options.clipSuccess( Src );
+            })
+        },
+        /**
+         *
+         * @param fileBtn  文件选择按钮
+         * @param fileSelectBtn  美化的文件选择按钮
+         * @param fileUpLoadBtn  上传按钮
+         * @param fileType  文件类型
+         * @param fileMaxSize  文件大小
+         * @param form  表单
+         * @param url  上传地址
+         * @param success  成功回调
+         */
+        fileUpload:function( options ){
+            var defaults = {
+                fileBtn:$("input[type='file']"),
+            };
+            var options = $.extend( defaults, options );
+            if( typeof options != "object" ){
+                return;
+            }
+            this.checkFileType(options);
+            options.fileUpLoadBtn.on('click',()=>{
+                this.uploadFormData( options )
+                    .then( res =>{
+                        options.success( res )
+                    })
+                    .catch( e =>{
+                        console.error(e)
+                    })
+            })
+
+        },
+        checkFileType:function( options ){
+            var self = this;
+            options.fileSelectBtn.change(function(){
+                const files = Array.from(this.files);
+                for(let file of files){
+                    if( ! self.fileTypeRegExp(options.fileType,file.type) ){
+                        return self.ljkUpLoadAlert(`请选择正确的${options.fileType}文件`);
+                    }
+                    if( options.fileMaxSize!= 'undefined' && typeof options.fileMaxSize == 'number'){
+                        var fileSize = file.size / 1024;
+                        if( fileSize > options.fileMaxSize ){
+                            self.ljkUpLoadAlert("抱歉,文件最大为 "+options.fileMaxSize+" KB");
+                            return;
+                        }
+                    }
+                    const reader = new FileReader();
+                    reader.onerror = () =>{
+                        console.log(`${file.name}读取失败!`)
+                    };
+                    reader.onload = () =>{
+                        console.error(`${file.name}读取成功,文件大小：${file.size/1024}KB`)
+                    }
+                }
+            })
+        },
+        fileTypeRegExp:function( fileType,reg ){
+            let regExp = new RegExp('.*\/(?:'+fileType+')$','i');
+            return regExp.test( reg )
+        },
+        uploadFormData( options ){
+            const formEle = options.form[0];
+            const formData = new FormData(formEle);
+            return fetch(options.url,{
+                method:"POST",
+                mode: "no-cors",
+                body:formData
             })
         }
     };
