@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>图片裁剪</title>
+</head>
+<style>
+    * {
+  font-family: "Microsoft YaHei", Arial;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #e8e8e8;
+}
+
+h1 {
+  text-align: center;
+}
+
+ol li {
+  line-height: 50px;
+}
+
+a {
+  text-decoration: none;
+  color: #444;
+  font-size: 14px;
+  border: transparent;
+  background-color: #FFF;
+  padding: 5px 20px;
+  transition: all .4s cubic-bezier(.65,-0.02,.34,.99);
+}
+
+a:hover {
+  color: #FFF;
+  background-color: #396;
+}
+
+.clear {
+  clear: both;
+}
+
+.text-center {
+  text-align: center;
+}
+
+canvas {
+  display: block;
+  border: 1px solid;
+}
+
+.margin-left {
+  margin-left: 30px;
+}
+
+.pull-left {
+  float: left;
+}
+
+#show-box {
+  width: 300px;
+  height: 300px;
+  border: 1px solid;
+  margin: 30px 0;
+  position: relative;
+  cursor: move;
+  overflow: hidden;
+}
+
+img {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+#clip-box {
+  width: 100px;
+  height: 100px;
+  border: 1px solid red;
+  position: absolute;
+  margin: auto;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  pointer-events: none;
+}
+.clip-image{
+  margin-top:20px;
+}
+
+    #quality-section {
+        display: none;
+    }
+</style>
+
+<body>
+
+    <input type="file" id="file" value="选择图片" accept="image/*">
+    <div id="show-box">
+        <div id="move-box"></div>
+        <div id="clip-box"></div>
+    </div>
+    <label for="quality-radio"><input type="checkbox" value="开启图片压缩" id="quality-radio" /> 图片压缩</label>
+    <span id="quality-section">
+          图片质量 <span id="quality">0.92</span>：[0]<input type="range" id="range" min="0" step="0.01" max="1" value="0.92">[1]
+    </span>
+
+    <button id="upload">裁剪</button>
+
+</body>
+<script>
+    let isQuality = false;
+    window.onload = () => {
+        init();
+    }
+
+    function init() {
+        rangeQuality();
+        selectImage();
+        showQuality();
+    }
+
+    function rangeQuality() {
+        let range = $('range');
+        range.addEventListener('mousemove', function() {
+            $('quality').innerHTML = this.value;
+        })
+    }
+
+    function showQuality() {
+        $('quality-radio').addEventListener('change', function() {
+            $('quality-section').style.display = isQuality ? 'none' : 'block'
+            isQuality = !isQuality;
+        })
+    }
+
+    function selectImage() {
+        const fileBtn = $('file');
+        fileBtn.addEventListener('change', function() {
+            const files = Array.from(this.files)
+
+            files.forEach(file => {
+                let reader = new FileReader();
+
+                reader.onload = function() {
+                    let result = this.result;
+                    loadImage(result).then(img => {
+                        $('move-box').appendChild(img)
+                        addMoveImageEvents($('move-box'))
+                        $('upload').addEventListener('click', () => {
+                            const toBaseImage = clipImage({
+                                img: img,
+                                clipEle: $('clip-box'),
+                                showEle: $('move-box'),
+                                quality: $('range').value
+                            })();
+                            loadImage(toBaseImage).then(img => {
+                                img.className = 'clip-image'
+                                document.body.appendChild(img)
+                            })
+                        })
+                    })
+                }
+                reader.onerror = e => {
+                    console.log(e)
+                }
+                reader.readAsDataURL(file)
+            })
+        })
+    }
+
+    function addMoveImageEvents(element) {
+        let isDown = false;
+        let mouseX = 0;
+        let mouseY = 0;
+
+        element.addEventListener('mousedown', e => {
+            e.preventDefault();
+            isDown = true;
+            mouseX = e.pageX - getXY($('move-box')).x;
+            mouseY = e.pageY - getXY($('move-box')).y;
+        })
+        element.addEventListener('mousemove', e => {
+            e.preventDefault();
+            let moveOffsetX, moveOffsetY = 0;
+            if (isDown === true) {
+                moveOffsetX = e.pageX - mouseX,
+                    moveOffsetY = e.pageY - mouseY;
+                element.style.transform = `translate3d(${moveOffsetX}px,${moveOffsetY}px,0)`
+            }
+        })
+        element.addEventListener('mouseup', e => {
+            e.preventDefault();
+            isDown = false;
+        })
+        element.addEventListener('mouseout', e => {
+            e.preventDefault();
+            isDown = false;
+        })
+    }
+
+    //裁剪图片
+    function clipImage(options = {
+        img: null,
+        clipEle: undefined,
+        showEle: undefined,
+        text: '头像',
+        quality: 0.92
+    }) {
+        let scale = 1;
+        let {
+            img,
+            clipEle,
+            showEle,
+            text,
+            quality
+        } = options;
+        console.log(quality)
+        const {
+            canvas,
+            cxt
+        } = createCanvas(); //图片canvas
+        const {
+            canvas: watermaskCanvas,
+            cxt: watermaskCxt
+        } = createCanvas(); //水印canvas
+
+
+        canvas.width = clipEle.offsetWidth;
+        canvas.height = clipEle.offsetHeight;
+
+        const sx = (getXY(clipEle).x - getXY(showEle).x) / scale, //偏移坐标
+            sy = (getXY(clipEle).y - getXY(showEle).y) / scale;
+        // image 图片元素，除了图片，还支持其他 3 种格式，分别是 HTMLVideoElement HTMLCanvasElement ImageBitmap ，
+        // sx 要绘制到 canvas 画布的源图片区域（矩形）在 X 轴上的偏移量（相对源图片左上角）
+        // sy 与 sx 同理，只是换成 Y 轴
+        // sWidth 要绘制到 canvas 画布中的源图片区域的宽度，如果没有指定这个值，宽度则是 sx 到图片最右边的距离
+        // sHeight 要绘制到画布中的源图片区域的高度，如果没有指定这个值，高度则是 sy 到图片最下边的距离
+        // dx 源图片左上角在 canvas 画布 X 轴上的偏移量
+        // dy 源图片左上角在画布 Y 轴上的偏移量
+        // dWidth 绘制图片的 canvas 画布宽度
+        // dHeight 绘制图片的画布高度
+
+        cxt.drawImage(img, sx, sy, canvas.width, canvas.height, 0, 0, canvas.width, canvas.height)
+            // 离屏canvas  将a canvas 画到b canvas上
+            // 绘制水印   在右下角
+        cxt.drawImage(watermaskCanvas, canvas.width, canvas.height);
+        addWatermark(watermaskCxt, text);
+
+        document.body.appendChild(canvas);
+
+        // type 图片格式。支持 3 种格式，分别是 image/jpeg image/png image/webp ，默认是 image/png 。其中 image/webp 只有 chrome 才支持。
+        // quality 图片质量。0 到 1 之间的数字，并且只在格式为 image/jpeg 或 image/webp 时才有效，如果参数值格式不合法，将会被忽略并使用默认值。
+        return function() {
+            return canvas.toDataURL(`${isQuality?'image/jpeg':'image/png'}`, Number(quality))
+        }
+    }
+
+    //加水印
+    function addWatermark(targetCxt, text) {
+        targetCxt.font = "bold 20px Microsoft YaHei";
+        targetCxt.fillStyle = "red";
+        targetCxt.textBaseline = "middle";
+        targetCxt.fillText(text, 30, 30);
+    }
+
+    function createCanvas() {
+        let canvas = document.createElement('canvas'),
+            cxt = canvas.getContext('2d');
+
+        return {
+            canvas,
+            cxt
+        }
+    }
+    function $(id){
+  return document.getElementById(id)
+}
+
+function loadImage( src ){
+    return new Promise((res,rej)=>{
+        let img = new Image();
+        img.src = src;
+        img.onload = () =>{
+            res(img)
+        }
+        img.onerror= (e) =>{
+            rej(e)
+        }
+    })
+
+}
+
+function getXY ( ele ) {
+  const x = ele.getBoundingClientRect().left;
+  const y = ele.getBoundingClientRect().top
+  return {
+    x,
+    y
+  }
+}
+</script>
+
+</html>

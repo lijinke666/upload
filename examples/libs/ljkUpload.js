@@ -1,8 +1,8 @@
 /**
- * Created by Administrator on 2016/7/13.
+ * Created by jinle.li on 2016/7/13.
  * By: 李金珂小朋友
  * 图片裁剪上传小组件
- * v 0.2
+ * v 0.3
  *  ：）
  */
 (function ($) {
@@ -83,36 +83,45 @@
             });
         },
 
+        getBoundingClientRect:function ( ele ) {
+            const gbc =  ele.getBoundingClientRect();
+            const left = gbc.left;
+            const top = gbc.top;
+            return {
+                left,
+                top
+            }
+        },
+
         //拖拽图片
         /**
          *
          * @param ele      拖拽区域
-         * @param isPc     是否为pc
          */
         moveImage: function ( options ) {
             if( typeof options != "object" ){
                 return
             }
             var options = $.extend({
-                ele:$('.move-image'),
-                isPc:true
+                ele:$('.move-image')
             },options)
+            var isPc = this.isPc();
             var mouseOffsetX = 0,
                 mouseOffsetY = 0,
                 isDown = false;
             //按下
             options.ele.on("mousedown touchstart", function ( e ) {
-                var touche = options.isPc ? e : event.targetTouches[0];
+                var touche = isPc ? e : event.targetTouches[0];
                     isDown = true;
-                mouseOffsetX = touche.pageX - parseInt(options.ele.get(0).offsetLeft);
-                mouseOffsetY = touche.pageY - parseInt(options.ele.get(0).offsetTop);
+                mouseOffsetX = touche.pageX - parseInt(this.getBoundingClientRect(options.ele.get(0)).left);
+                mouseOffsetY = touche.pageY - parseInt(this.getBoundingClientRect(options.ele.get(0)).top);
             });
             //离开
             options.ele.on("mousemove touchmove", function ( e ) {
                 e.preventDefault();
                 var mouseX = 0,
                     mouseY = 0;
-                var touche = options.isPc ? e : event.targetTouches[0];
+                var touche = isPc ? e : event.targetTouches[0];
                 if ( isDown === true ) {
                     mouseX = touche.pageX - mouseOffsetX;
                     mouseY = touche.pageY - mouseOffsetY;
@@ -140,7 +149,6 @@
          * @param fileSelectBtn     文件选择按钮
          * @param fileBtn     文件按钮
          * @param showEle     图片显示区域
-         * @param isImage     是图片还是文件 true || false
          * @param maxSize     图片最大限制  KB
          */
         showImage: function ( options ) {
@@ -164,13 +172,15 @@
                     return;
                 }
                 //将对象转换为数组 Array.prototype.slice.call(obj);
+                //对象没有slice方法 所以通过Array的原型上的slice 通过call改变this指针
                 //ES6中可以写成  Array.from(obj);
                 var files = Array.prototype.slice.call( this.files );
 
                 files.forEach( function ( file, i ) {
-                    //jpeg png gif    "/images/jpeg"     i对大小写不敏感
+                    //jpeg png gif    like  "/images/jpeg"     i对大小写不敏感
                     var fileType = /\/(?:jpeg|png|gif)/i ;          //图片
-                    var type = file.type.split("/").pop();
+                    // var type = file.type.split("/").pop();
+                    var type = file.type.match(/image\/(\w*)/)[1];    //获取文件的类型
                     if ( !fileType.test( file.type ) ) {
                         _this.ljkUpLoadAlert("不支持"+type+"格式的图片哟");
                         return;
@@ -184,7 +194,8 @@
                     }
                     //HTML 5.1  新增file接口
                     var reader = new FileReader();
-
+                    
+                    //读取中
                     reader.onprogress = function(){
                         _this.ljkUpLoadAnimate("读取中,请稍后");
                     };
@@ -202,17 +213,20 @@
                     reader.onload = function () {
                         _this.delete($(".removeLoading"));
                         var result = this.result;        //读取失败时  null   否则就是读取的结果
-                        var image = new Image();
-                        image.src = result;
-                        options.fileSelectBtn.addClass("success-linear");
-                        options.showEle.html('').append(image).removeClass("hasImg");
+                        _this.loadImage(result).then(image=>{
+                            options.fileSelectBtn.addClass("success-linear");
+                            options.showEle.html('').append(image).removeClass("hasImg");
+                        }).catch(e=>{
+                            throw new Error(e);
+                        })
         
                        var $range = $('input[type="range"]'),
-                            scale = Number($range.val());
+                            scale = Number($range.val());     //强制类型转换 
+                            //取整 parseInt ||  >>0  ||  ~~ 都可以
                             options.showEle.get(0).onmousewheel = function(e){
                                var target,
                                    ee = e || window.event;
-                               target = ee.delta ? ee.delta :  ee.wheelDelta;
+                               target = ee.delta ? ee.delta :  ee.wheelDelta;    //火狐有特殊
                                if(target > 0 ){
                                    scale += 0.05;
                                    scale = Math.min(scale,3.0);
@@ -236,6 +250,19 @@
                 })
             });
         },
+        loadImage:function( src ){
+            return new Promise((res,rej)=>{
+                let img = new Image();
+                img.src = src;
+                img.onload = () =>{
+                    res(img)
+                }
+                img.onerror= (e) =>{
+                    rej(e)
+                }
+            })
+        },
+
         //滑块拖拽缩放
         /**
          *
@@ -287,6 +314,9 @@
          * @param uploadImageBox  拖拽区域
          * @param clipImage  裁剪区域
          * @param range  滑块
+         * @param quality  压缩比例
+         * @param clipSuccess  成功callback
+         * @param clipError  失败callback
          */
         clipImage: function ( options ){
             var _this = this;
@@ -304,99 +334,86 @@
             //选择图片
 
             options.uploadBtn.on("click",function(){
-                if(options.uploadImageBox.hasClass("hasImg")){
+                try{
+                    if(options.uploadImageBox.hasClass("hasImg")){
                     _this.ljkUpLoadAlert("请选择图片");
                     return;
-                }
-                var $img = options.uploadImageBox.find("img"),
+                    }
+                    var $img = options.uploadImageBox.find("img"),
                     canvas = document.createElement("canvas"),
                     ljk = canvas.getContext("2d"),
                     $width = options.clipImage.width(),
                     $height = options.clipImage.height();
-                canvas.width = $width;
-                canvas.height = $height;
+                    canvas.width = $width;
+                    canvas.height = $height;
 
-                var scale = options.range.val() || options.range.value,
-                    sx = parseInt ( options.clipImage.offset().left - options.uploadImageBox.offset().left),
-                    sy = parseInt ( options.clipImage.offset().top - options.uploadImageBox.offset().top );
-                ljk.drawImage( $img.get(0), sx / scale, sy/ scale, $width / scale, $height / scale, 0, 0 , $width , $height );
+                    var scale = options.range.val() || options.range.value,
+                        sx = parseInt ( options.clipImage.offset().left - options.uploadImageBox.offset().left),
+                        sy = parseInt ( options.clipImage.offset().top - options.uploadImageBox.offset().top );
+                    // image 图片元素，除了图片，还支持其他 3 种格式，分别是 HTMLVideoElement HTMLCanvasElement ImageBitmap ，
+                    // sx 要绘制到 canvas 画布的源图片区域（矩形）在 X 轴上的偏移量（相对源图片左上角）
+                    // sy 与 sx 同理，只是换成 Y 轴
+                    // sWidth 要绘制到 canvas 画布中的源图片区域的宽度，如果没有指定这个值，宽度则是 sx 到图片最右边的距离
+                    // sHeight 要绘制到画布中的源图片区域的高度，如果没有指定这个值，高度则是 sy 到图片最下边的距离
+                    // dx 源图片左上角在 canvas 画布 X 轴上的偏移量
+                    // dy 源图片左上角在画布 Y 轴上的偏移量
+                    // dWidth 绘制图片的 canvas 画布宽度
+                    // dHeight 绘制图片的画布高度
+                    ljk.drawImage( $img.get(0), sx / scale, sy/ scale, $width / scale, $height / scale, 0, 0 , $width , $height );
 
-                var Src = canvas.toDataURL( "images/png" );
-                if( typeof  options.clipSuccess != "function" ){
-                    throw new Error("请使用clipSuccess回调函数:(");
+                    var imageType = (options.quality && typeof (options.quality) === 'number') ? 'image/jpeg' : 'image/png'
+                    //toDataURL  param1 文件类型 param2 质量  当第二参数为正时 param1 只能是 jpeg|webp
+                    var Src = canvas.toDataURL( imageType, Number(options.quality) );
+                    if( typeof  options.clipSuccess != "function" ){
+                        throw new Error("请使用clipSuccess回调函数:(");
+                    }
+                    options.clipSuccess( Src );
+                }catch(e){
+                    options.clipError( 'error:'+e );
                 }
-                options.clipSuccess( Src );
             })
         },
-        /**
-         *
-         * @param fileBtn  文件选择按钮
-         * @param fileSelectBtn  美化的文件选择按钮
-         * @param fileUpLoadBtn  上传按钮
-         * @param fileType  文件类型
-         * @param fileMaxSize  文件大小
-         * @param form  表单
-         * @param url  上传地址
-         * @param success  成功回调
-         */
-        fileUpload:function( options ){
+        upload:function( options ){
             var defaults = {
-                fileBtn:$("input[type='file']"),
-            };
-            var options = $.extend( defaults, options );
-            if( typeof options != "object" ){
-                return;
+                fileBtn:$('input[type="file"]'),
+                fileSelectBtn:$('upload-select-btn'),
+                showEle:$('.move-image'),
+                maxSize:1024,
+                range:$("#range"),
+                success:function(){},
+                error:function(){ }
             }
-            this.checkFileType(options);
-            options.fileUpLoadBtn.on('click',()=>{
-                this.uploadFormData( options )
-                    .then( res =>{
-                        options.success( res )
-                    })
-                    .catch( e =>{
-                        console.error(e)
-                    })
+            var options = $.extend( defaults, options )
+            this.moveImage({
+                ele:options.moveEle
             })
-
-        },
-        checkFileType:function( options ){
-            var self = this;
-            options.fileSelectBtn.change(function(){
-                const files = Array.from(this.files);
-                for(let file of files){
-                    if( ! self.fileTypeRegExp(options.fileType,file.type) ){
-                        return self.ljkUpLoadAlert(`请选择正确的${options.fileType}文件`);
-                    }
-                    if( options.fileMaxSize!= 'undefined' && typeof options.fileMaxSize == 'number'){
-                        var fileSize = file.size / 1024;
-                        if( fileSize > options.fileMaxSize ){
-                            self.ljkUpLoadAlert("抱歉,文件最大为 "+options.fileMaxSize+" KB");
-                            return;
-                        }
-                    }
-                    const reader = new FileReader();
-                    reader.onerror = () =>{
-                        console.log(`${file.name}读取失败!`)
-                    };
-                    reader.onload = () =>{
-                        console.error(`${file.name}读取成功,文件大小：${file.size/1024}KB`)
-                    }
+            this.showImage({
+                fileSelectBtn:options.fileSelectBtn,
+                fileBtn:options.fileBtn,
+                showEle:options.showEle,
+                maxSize:options.maxSize
+            })
+            this.rangeToScale({
+                range:options.range,
+                ele:options.showEle
+            })
+            this.clipImage({
+                range:options.range,
+                quality:options.quality,
+                clipSuccess:function( Src ){
+                    options.success( Src )
+                },
+                clipError:function( e ){
+                    options.error( e )
                 }
             })
         },
         fileTypeRegExp:function( fileType,reg ){
             let regExp = new RegExp('.*\/(?:'+fileType+')$','i');
             return regExp.test( reg )
-        },
-        uploadFormData( options ){
-            const formEle = options.form[0];
-            const formData = new FormData(formEle);
-            return fetch(options.url,{
-                method:"POST",
-                mode: "no-cors",
-                body:formData
-            })
         }
     };
+    //自执行函数 不暴露成员
+    //挂载在 window全局对象 不然访问不到
     window['LjkUpload'] = LjkUpload;
 })(jQuery);

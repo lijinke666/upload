@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>实例</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="format-detection" content="telephone=no"/>
+    <link rel="stylesheet" href="/libs/ljkUpload.min.css">
+</head>
+<body>
+<div class="headImg-popup">
+    <div class="upload-image-box text-center color-white fz16rem mt1rem">
+        <!--拖动缩放区域-->
+        <div class="move-image hasImg"></div>
+        <!--切割区域-->
+        <div class="clip-image"></div>
+    </div>
+    <div class="mt1rem range-box">
+        <!--滑竿-->
+        <input type="range" max="3.0" min="0.1" value="1.0" step="0.01" class="inp" id="range">
+    </div>
+    <aside class="text-center mt2rem">
+        <input type="file" accept="image/*" multiple id="file-btn" class="hidden">
+        <button class="btn btn-blue upload-select-btn">选择图片</button>
+        <button class="btn btn-primary upload-upload-btn">立即上传</button>
+    </aside>
+</div>
+<section>
+    <ul class="showImage">
+    </ul>
+</section>
+</body>
+<script src="/libs/jquery.min.js"></script>
+<script src="/libs/ljkUpload.js"></script>
+<script>
+    $(function () {
+        var ljkUpload = new LjkUpload($(".headImg-popup"));
+
+        ljkUpload.upload({
+            fileBtn:$("input[type='file']"),          //file 文件按钮
+            fileSelectBtn:$(".upload-select-btn"),    //文件选择按钮
+            uploadBtn:$(".upload-upload-btn"),        //文件上传按钮
+            showEle:$(".move-image"),                 //图片移动区域            
+            maxSize:1024,                        //文件大小限制   默认1M
+           // quality:0.92                              //图片压缩  0-1  可不选 默认 0.92
+            range:$("#range"),                        //滑块                           
+            success:function( image ){                //裁剪成功callback  返回base64图片
+                $('.showImage').append(`<li><img src="${image}"></li>`)
+                $.ajax({
+                    url:"/uploadImage",
+                    type:"post",
+                    data:{image:image},
+                    dataType:"json",
+                    success:function(res){
+                        if(res.success){
+                            alert('上传成功')
+                        }
+                    }
+                })
+            },
+            error:function(e){                        //裁剪失败callback  返回错误信息
+                console.error(e)
+            }    
+        })
+
+    })
+
+</script>
+</html>

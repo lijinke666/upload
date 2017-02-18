@@ -6,12 +6,23 @@
 body{
     overflow-x: hidden;
 }
+.range-box{
+    overflow: hidden;
+    display: flex;
+}
+.range-box>input{
+    flex: 1
+}
+aside{
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
 .headImg-popup button {
-    width: 48%;
+    flex-basis: 48%;
     height: 4rem;
 }
 .headImg-popup button:nth-of-type(1) {
-    margin-right: 2%;
     position: relative;
     overflow: hidden;
 }
@@ -137,11 +148,22 @@ body{
     text-shadow: 1px 1px 2px rgba(0,0,0,.3);
 }
 .showImage{
-    font-size: 0;
+    margin-top: 30px;
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
 }
 .showImage li{
+    width: 9rem;
+    height:9rem;
     list-style: none;
-    float: left;
+    border: 1px solid;
+    margin:.5rem;
+    border-radius: 100%;
+    overflow: hidden;
+}
+.showImage li>img{
+    width: 100%;
 }
 input[type="range"]{
     background-color: #F3F4F6;

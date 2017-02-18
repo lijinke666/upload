@@ -1,0 +1,18 @@
+{
+  "scripts": {
+    "start": "node  app",
+    "cssMin": "gulp cssMin",
+    "jsMin": "gulp jsMin"
+  },
+  "dependencies": {
+    "body-parser": "^1.16.1",
+    "express": "^4.14.1",
+    "gulp": "^3.9.1",
+    "gulp-autoprefixer": "^3.1.1",
+    "gulp-clean-css": "^3.0.2",
+    "gulp-concat": "^2.6.1",
+    "gulp-rename": "^1.2.2",
+    "gulp-rev-append": "^0.1.8",
+    "gulp-uglify": "^2.0.1"
+  }
+}
