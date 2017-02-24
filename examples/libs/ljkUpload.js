@@ -113,8 +113,8 @@
             options.ele.on("mousedown touchstart", function ( e ) {
                 var touche = isPc ? e : event.targetTouches[0];
                     isDown = true;
-                mouseOffsetX = touche.pageX - parseInt(this.getBoundingClientRect(options.ele.get(0)).left);
-                mouseOffsetY = touche.pageY - parseInt(this.getBoundingClientRect(options.ele.get(0)).top);
+                mouseOffsetX = touche.pageX - ~~(this.getBoundingClientRect(options.ele.get(0)).left);
+                mouseOffsetY = touche.pageY - ~~(this.getBoundingClientRect(options.ele.get(0)).top);
             });
             //离开
             options.ele.on("mousemove touchmove", function ( e ) {
@@ -348,8 +348,8 @@
                     canvas.height = $height;
 
                     var scale = options.range.val() || options.range.value,
-                        sx = parseInt ( options.clipImage.offset().left - options.uploadImageBox.offset().left),
-                        sy = parseInt ( options.clipImage.offset().top - options.uploadImageBox.offset().top );
+                        sx = ~~ ( options.clipImage.offset().left - options.uploadImageBox.offset().left),
+                        sy = ~~ ( options.clipImage.offset().top - options.uploadImageBox.offset().top );
                     // image 图片元素，除了图片，还支持其他 3 种格式，分别是 HTMLVideoElement HTMLCanvasElement ImageBitmap ，
                     // sx 要绘制到 canvas 画布的源图片区域（矩形）在 X 轴上的偏移量（相对源图片左上角）
                     // sy 与 sx 同理，只是换成 Y 轴
