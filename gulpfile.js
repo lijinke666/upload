@@ -24,9 +24,3 @@ gulp.task('cssMin',function(){
         .pipe(gulp.dest('examples/libs'))
 })
 
-gulp.task('jsMin',function(){
-    gulp.src('examples/libs/ljkUpload.js')
-        .pipe(jsmin())
-        .pipe(rename({suffix:'.min'}))
-        .pipe(gulp.dest('examples/libs'))
-})

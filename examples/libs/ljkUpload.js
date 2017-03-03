@@ -6,7 +6,7 @@
  *  ：）
  */
 (function ($) {
-    var LjkUpload = function ( element ) {
+    var LjkUpload = function (element) {
         this.element = element;
     };
     LjkUpload.prototype = {
@@ -28,15 +28,15 @@
          *
          * @param msg  loading动画 文字信息
          */
-        ljkUpLoadAnimate:function( msg ){
-            msg = msg ? msg :'请稍后';
-            var list ="";
-            for(var i=1; i<=12; i++){
-                list+= "<div class='sk-circle"+i+" sk-child'></div>";
+        ljkUpLoadAnimate: function (msg) {
+            msg = msg ? msg : '请稍后';
+            var list = "";
+            for (var i = 1; i <= 12; i++) {
+                list += "<div class='sk-circle" + i + " sk-child'></div>";
             }
             var doms = $("" +
                 "<div class='removeLoading jmcpopup modal' style='display: block'><div class='mask'><div class='loading'>" +
-                "<div class='sk-circle'>" + list+ "</div><p class='text-center fz18 color-white mt30'>"+msg+"</p></div></div>");
+                "<div class='sk-circle'>" + list + "</div><p class='text-center fz18 color-white mt30'>" + msg + "</p></div></div>");
             $("body").append(doms);
         },
 
@@ -47,21 +47,21 @@
          * @param title            标题
          * @param showTime        显示时间
          */
-        ljkUpLoadAlert:function(msg, onHideHandler ,title, showTime){
+        ljkUpLoadAlert: function (msg, onHideHandler, title, showTime) {
             title = title ? title : '金珂提示你';
-            var $dom = $('<div class="jmcpopup modal" style="display:block"><div class="mask"></div><div class="jmcpopup-wrap modal-wrap ctrl-modal"><div class="modal-title"><h2 class="none">'+title+'</h2></div><table><tr><td><h1 class="none mt20">'+msg+'</h1></td></tr></table></div></div>');
+            var $dom = $('<div class="jmcpopup modal" style="display:block"><div class="mask"></div><div class="jmcpopup-wrap modal-wrap ctrl-modal"><div class="modal-title"><h2 class="none">' + title + '</h2></div><table><tr><td><h1 class="none mt20">' + msg + '</h1></td></tr></table></div></div>');
             $('body').append($dom);
 
-            if( typeof showTime == 'undefined' ){
+            if (typeof showTime == 'undefined') {
                 showTime = 1500;
-            }else{
-                showTime = Math.max( parseInt(showTime), 1500 );
+            } else {
+                showTime = Math.max(parseInt(showTime), 1500);
             }
-            var i=setTimeout(function(){
+            var i = setTimeout(function () {
                 clearTimeout(i);
-                setTimeout(function(){
+                setTimeout(function () {
                     $dom.remove();
-                    if( typeof(onHideHandler) == 'function'){
+                    if (typeof (onHideHandler) == 'function') {
                         onHideHandler();
                     }
                 }, 500);
@@ -70,12 +70,12 @@
         },
 
         //删除loading动画
-        delete:function( ele ){
+        delete: function (ele) {
             ele.remove();
         },
 
-        selectImg:function( options ){
-            if( typeof options != "object" ){
+        selectImg: function (options) {
+            if (typeof options != "object") {
                 return
             }
             options.fileSelectBtn.on("click", function () {
@@ -83,8 +83,8 @@
             });
         },
 
-        getBoundingClientRect:function ( ele ) {
-            const gbc =  ele.getBoundingClientRect();
+        getBoundingClientRect: function (ele) {
+            const gbc = ele.getBoundingClientRect();
             const left = gbc.left;
             const top = gbc.top;
             return {
@@ -98,31 +98,31 @@
          *
          * @param ele      拖拽区域
          */
-        moveImage: function ( options ) {
-            if( typeof options != "object" ){
+        moveImage: function (options) {
+            if (typeof options != "object") {
                 return
             }
             var options = $.extend({
-                ele:$('.move-image')
-            },options)
+                ele: $('.move-image')
+            }, options)
             var isPc = this.isPc();
             var mouseOffsetX = 0,
                 mouseOffsetY = 0,
                 isDown = false;
             //按下
-            options.ele.on("mousedown touchstart", function ( e ) {
+            options.ele.on("mousedown touchstart", function (e) {
                 var touche = isPc ? e : event.targetTouches[0];
-                    isDown = true;
+                isDown = true;
                 mouseOffsetX = touche.pageX - ~~(this.getBoundingClientRect(options.ele.get(0)).left);
                 mouseOffsetY = touche.pageY - ~~(this.getBoundingClientRect(options.ele.get(0)).top);
             });
             //离开
-            options.ele.on("mousemove touchmove", function ( e ) {
+            options.ele.on("mousemove touchmove", function (e) {
                 e.preventDefault();
                 var mouseX = 0,
                     mouseY = 0;
                 var touche = isPc ? e : event.targetTouches[0];
-                if ( isDown === true ) {
+                if (isDown === true) {
                     mouseX = touche.pageX - mouseOffsetX;
                     mouseY = touche.pageY - mouseOffsetY;
                     options.ele.css({
@@ -132,12 +132,12 @@
                 }
             });
             //弹起
-            options.ele.on("mouseup touchend", function ( e ) {
+            options.ele.on("mouseup touchend", function (e) {
                 e.preventDefault();
                 isDown = false;
             });
             //移出
-            options.ele.on("mouseout", function ( e ) {
+            options.ele.on("mouseout", function (e) {
                 e.preventDefault();
                 isDown = false;
             });
@@ -151,52 +151,52 @@
          * @param showEle     图片显示区域
          * @param maxSize     图片最大限制  KB
          */
-        showImage: function ( options ) {
+        showImage: function (options) {
             var defaults = {
-                maxSize:1024
+                maxSize: 1024
             };
-            var options = $.extend( defaults, options );
-            if( typeof options != "object" ){
+            var options = $.extend(defaults, options);
+            if (typeof options != "object") {
                 return
             }
             var _this = this;
-            _this.selectImg( options );
+            _this.selectImg(options);
             //获取到文件时
             options.fileBtn.change(function () {
-                if( !window.FileReader){
+                if (!window.FileReader) {
                     _this.ljkUpLoadAlert("浏览器版本过低");
                     return;
                 }
-                if (this.files.length && this.files.length > 1 ) {
-                    _this.ljkUpLoadAlert( "只能上传1张图片:)" );
+                if (this.files.length && this.files.length > 1) {
+                    _this.ljkUpLoadAlert("只能上传1张图片:)");
                     return;
                 }
                 //将对象转换为数组 Array.prototype.slice.call(obj);
                 //对象没有slice方法 所以通过Array的原型上的slice 通过call改变this指针
                 //ES6中可以写成  Array.from(obj);
-                var files = Array.prototype.slice.call( this.files );
+                var files = Array.prototype.slice.call(this.files);
 
-                files.forEach( function ( file, i ) {
+                files.forEach(function (file, i) {
                     //jpeg png gif    like  "/images/jpeg"     i对大小写不敏感
-                    var fileType = /\/(?:jpeg|png|gif)/i ;          //图片
+                    var fileType = /\/(?:jpeg|png|gif)/i;          //图片
                     // var type = file.type.split("/").pop();
                     var type = file.type.match(/image\/(\w*)/)[1];    //获取文件的类型
-                    if ( !fileType.test( file.type ) ) {
-                        _this.ljkUpLoadAlert("不支持"+type+"格式的图片哟");
+                    if (!fileType.test(file.type)) {
+                        _this.ljkUpLoadAlert("不支持" + type + "格式的图片哟");
                         return;
                     }
-                    if( options.maxSize!= 'undefined' && typeof options.maxSize == 'number'){
+                    if (options.maxSize != 'undefined' && typeof options.maxSize == 'number') {
                         var fileSize = file.size / 1024;
-                        if( fileSize > options.maxSize ){
-                            _this.ljkUpLoadAlert("抱歉,图片最大为 "+options.maxSize+" KB");
+                        if (fileSize > options.maxSize) {
+                            _this.ljkUpLoadAlert("抱歉,图片最大为 " + options.maxSize + " KB");
                             return;
                         }
                     }
                     //HTML 5.1  新增file接口
                     var reader = new FileReader();
-                    
+
                     //读取中
-                    reader.onprogress = function(){
+                    reader.onprogress = function () {
                         _this.ljkUpLoadAnimate("读取中,请稍后");
                     };
                     //读取失败
@@ -213,51 +213,51 @@
                     reader.onload = function () {
                         _this.delete($(".removeLoading"));
                         var result = this.result;        //读取失败时  null   否则就是读取的结果
-                        _this.loadImage(result).then(image=>{
+                        _this.loadImage(result).then(image => {
                             options.fileSelectBtn.addClass("success-linear");
                             options.showEle.html('').append(image).removeClass("hasImg");
-                        }).catch(e=>{
+                        }).catch(e => {
                             throw new Error(e);
                         })
-        
-                       var $range = $('input[type="range"]'),
+
+                        var $range = $('input[type="range"]'),
                             scale = Number($range.val());     //强制类型转换 
-                            //取整 parseInt ||  >>0  ||  ~~ 都可以
-                            options.showEle.get(0).onmousewheel = function(e){
-                               var target,
-                                   ee = e || window.event;
-                               target = ee.delta ? ee.delta :  ee.wheelDelta;    //火狐有特殊
-                               if(target > 0 ){
-                                   scale += 0.05;
-                                   scale = Math.min(scale,3.0);
-                                   $range.val(scale);
-                                  _this.ToScale(options.showEle,scale)
-                               }else if( target < 0 ){
-                                   scale -=0.05;
-                                   scale = Math.max(0,scale);
-                                   $range.val(scale);
-                                   _this.ToScale(options.showEle,scale)
-                               }else{
-                                   return false;
-                               }
-                            };
-                        
+                        //取整 parseInt ||  >>0  ||  ~~ 都可以
+                        options.showEle.get(0).onmousewheel = function (e) {
+                            var target,
+                                ee = e || window.event;
+                            target = ee.delta ? ee.delta : ee.wheelDelta;    //火狐有特殊
+                            if (target > 0) {
+                                scale += 0.05;
+                                scale = Math.min(scale, 3.0);
+                                $range.val(scale);
+                                _this.ToScale(options.showEle, scale)
+                            } else if (target < 0) {
+                                scale -= 0.05;
+                                scale = Math.max(0, scale);
+                                $range.val(scale);
+                                _this.ToScale(options.showEle, scale)
+                            } else {
+                                return false;
+                            }
+                        };
+
                         options.fileBtn.blur();
                     };
                     //注入图片或文件  转换成base64
-                    reader.readAsDataURL( file );      //base64
+                    reader.readAsDataURL(file);      //base64
                     // reader.readAsBinaryString( file );      //二进制
                 })
             });
         },
-        loadImage:function( src ){
-            return new Promise((res,rej)=>{
+        loadImage: function (src) {
+            return new Promise((res, rej) => {
                 let img = new Image();
                 img.src = src;
-                img.onload = () =>{
+                img.onload = () => {
                     res(img)
                 }
-                img.onerror= (e) =>{
+                img.onerror = (e) => {
                     rej(e)
                 }
             })
@@ -270,24 +270,24 @@
          * @param scale   缩放比例
          * @param ele     什么区域进行缩放
          */
-        rangeToScale: function ( options ) {
-            if( typeof options != "object" ){
+        rangeToScale: function (options) {
+            if (typeof options != "object") {
                 return;
             }
             var _this = this;
-            var scale = Number ( options.range.val() );
-            options.range.on("mousemove touchmove", function ( e ) {
+            var scale = Number(options.range.val());
+            options.range.on("mousemove touchmove", function (e) {
                 var _this_ = $(this);
                 scale = Number(_this_.val());
-                _this.ToScale( options.ele, scale );
-            }).prev().on("click touchstart",function(){
-                scale-= 0.01;
-                options.range.val( scale );
-                _this.ToScale( options.ele ,scale )
-            }).next().next().on("click touchstart",function(){
-                scale+= 0.01;
-                options.range.val( scale );
-                _this.ToScale( options.ele ,scale )
+                _this.ToScale(options.ele, scale);
+            }).prev().on("click touchstart", function () {
+                scale -= 0.01;
+                options.range.val(scale);
+                _this.ToScale(options.ele, scale)
+            }).next().next().on("click touchstart", function () {
+                scale += 0.01;
+                options.range.val(scale);
+                _this.ToScale(options.ele, scale)
             });
         },
 
@@ -297,7 +297,7 @@
          * @param ele     什么区域进行缩放
          * @param scale   缩放比例
          */
-        ToScale:function( ele , scale ){
+        ToScale: function (ele, scale) {
             ele.css({
                 "-webkit-transform": "scale(" + scale + ")",
                 "-moz-transform": "scale(" + scale + ")",
@@ -318,38 +318,37 @@
          * @param clipSuccess  成功callback
          * @param clipError  失败callback
          */
-        clipImage: function ( options ){
+        clipImage: function (options) {
             var _this = this;
-            if( typeof options != "object" ){
+            if (typeof options != "object") {
                 return
             }
             var defaults = {
-                uploadBtn:$(".upload-upload-btn"),
-                uploadImageBox:$(".move-image"),
-                clipImage:$(".clip-image"),
-                range:$("#range")
+                uploadBtn: $(".upload-upload-btn"),
+                uploadImageBox: $(".move-image"),
+                clipImage: $(".clip-image"),
+                range: $("#range")
             };
-            var options = $.extend( defaults , options );
-
+            var options = $.extend(defaults, options);
+            _this.canvas = document.createElement("canvas")
             //选择图片
 
-            options.uploadBtn.on("click",function(){
-                try{
-                    if(options.uploadImageBox.hasClass("hasImg")){
-                    _this.ljkUpLoadAlert("请选择图片");
-                    return;
+            options.uploadBtn.on("click", function () {
+                try {
+                    if (options.uploadImageBox.hasClass("hasImg")) {
+                        _this.ljkUpLoadAlert("请选择图片");
+                        return;
                     }
                     var $img = options.uploadImageBox.find("img"),
-                    canvas = document.createElement("canvas"),
-                    ljk = canvas.getContext("2d"),
-                    $width = options.clipImage.width(),
-                    $height = options.clipImage.height();
-                    canvas.width = $width;
-                    canvas.height = $height;
+                        cxt = _this.canvas.getContext("2d"),
+                        $width = options.clipImage.width(),
+                        $height = options.clipImage.height();
+                    _this.canvas.width = $width;
+                    _this.canvas.height = $height;
 
                     var scale = options.range.val() || options.range.value,
-                        sx = ~~ ( options.clipImage.offset().left - options.uploadImageBox.offset().left),
-                        sy = ~~ ( options.clipImage.offset().top - options.uploadImageBox.offset().top );
+                        sx = ~~(options.clipImage.offset().left - options.uploadImageBox.offset().left),
+                        sy = ~~(options.clipImage.offset().top - options.uploadImageBox.offset().top);
                     // image 图片元素，除了图片，还支持其他 3 种格式，分别是 HTMLVideoElement HTMLCanvasElement ImageBitmap ，
                     // sx 要绘制到 canvas 画布的源图片区域（矩形）在 X 轴上的偏移量（相对源图片左上角）
                     // sy 与 sx 同理，只是换成 Y 轴
@@ -359,58 +358,59 @@
                     // dy 源图片左上角在画布 Y 轴上的偏移量
                     // dWidth 绘制图片的 canvas 画布宽度
                     // dHeight 绘制图片的画布高度
-                    ljk.drawImage( $img.get(0), sx / scale, sy/ scale, $width / scale, $height / scale, 0, 0 , $width , $height );
+                    cxt.drawImage($img.get(0), sx / scale, sy / scale, $width / scale, $height / scale, 0, 0, $width, $height);
 
                     var imageType = (options.quality && typeof (options.quality) === 'number') ? 'image/jpeg' : 'image/png'
                     //toDataURL  param1 文件类型 param2 质量  当第二参数为正时 param1 只能是 jpeg|webp
-                    var Src = canvas.toDataURL( imageType, Number(options.quality) );
-                    if( typeof  options.clipSuccess != "function" ){
+                    var Src = _this.canvas.toDataURL(imageType, Number(options.quality));
+                    delete this.canvas;
+                    if (typeof options.clipSuccess != "function") {
                         throw new Error("请使用clipSuccess回调函数:(");
                     }
-                    options.clipSuccess( Src );
-                }catch(e){
-                    options.clipError( 'error:'+e );
+                    options.clipSuccess(Src);
+                } catch (e) {
+                    options.clipError('error:' + e);
                 }
             })
         },
-        upload:function( options ){
+        upload: function (options) {
             var defaults = {
-                fileBtn:$('input[type="file"]'),
-                fileSelectBtn:$('upload-select-btn'),
-                showEle:$('.move-image'),
-                maxSize:1024,
-                range:$("#range"),
-                success:function(){},
-                error:function(){ }
+                fileBtn: $('input[type="file"]'),
+                fileSelectBtn: $('upload-select-btn'),
+                showEle: $('.move-image'),
+                maxSize: 1024,
+                range: $("#range"),
+                success: function () { },
+                error: function () { }
             }
-            var options = $.extend( defaults, options )
+            var options = $.extend(defaults, options)
             this.moveImage({
-                ele:options.moveEle
+                ele: options.moveEle
             })
             this.showImage({
-                fileSelectBtn:options.fileSelectBtn,
-                fileBtn:options.fileBtn,
-                showEle:options.showEle,
-                maxSize:options.maxSize
+                fileSelectBtn: options.fileSelectBtn,
+                fileBtn: options.fileBtn,
+                showEle: options.showEle,
+                maxSize: options.maxSize
             })
             this.rangeToScale({
-                range:options.range,
-                ele:options.showEle
+                range: options.range,
+                ele: options.showEle
             })
             this.clipImage({
-                range:options.range,
-                quality:options.quality,
-                clipSuccess:function( Src ){
-                    options.success( Src )
+                range: options.range,
+                quality: options.quality,
+                clipSuccess: function (Src) {
+                    options.success(Src)
                 },
-                clipError:function( e ){
-                    options.error( e )
+                clipError: function (e) {
+                    options.error(e)
                 }
             })
         },
-        fileTypeRegExp:function( fileType,reg ){
-            let regExp = new RegExp('.*\/(?:'+fileType+')$','i');
-            return regExp.test( reg )
+        fileTypeRegExp: function (fileType, reg) {
+            let regExp = new RegExp('.*\/(?:' + fileType + ')$', 'i');
+            return regExp.test(reg)
         }
     };
     //自执行函数 不暴露成员

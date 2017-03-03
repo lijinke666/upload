@@ -31,7 +31,7 @@
 </section>
 </body>
 <script src="/libs/jquery.min.js"></script>
-<script src="/libs/ljkUpload.js"></script>
+<script src="/libs/ljkUpload.min.js"></script>
 <script>
     $(function () {
         var ljkUpload = new LjkUpload($(".headImg-popup"));
@@ -47,14 +47,13 @@
             success:function( image ){                //裁剪成功callback  返回base64图片
                 $('.showImage').append(`<li><img src="${image}"></li>`)
                 $.ajax({
-                    url:"/uploadImage",
+                    url:"/examples/uploadImage",
                     type:"post",
                     data:{image:image},
                     dataType:"json",
                     success:function(res){
-                        if(res.success){
-                            alert('上传成功')
-                        }
+                        if(res.success)
+                            ljkUpload.ljkUpLoadAlert('上传成功')
                     }
                 })
             },
