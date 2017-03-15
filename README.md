@@ -1,17 +1,14 @@
 # LjkUpLoad.js
-npm install
+`(npm or yarn) install`
 ============
-or
-yarn 
-===========
-
-npm start
-or
-yarn start
+`(yarn or npm) start`
 
 :)
-#客户端
+`npm start`
+
+##客户端
 *********************************
+```
 var ljkUpload = new LjkUpload($(rootElement);
  ljkUpload.upload({
     fileBtn:param,          //file 文件按钮
@@ -28,7 +25,8 @@ var ljkUpload = new LjkUpload($(rootElement);
         console.error(e)
     }    
  })
-#服务端
+ ```
+##服务端
 app.js
 提供一个 服务端接受 base64图片的例子
 #imageClip.html 是一个原生js版本的图片裁剪例子 =>>> to NaNa :)
