@@ -7,10 +7,11 @@ const app = express()
 const saveImageDir = path.resolve(__dirname, "images")
 
 app.use(bodyParser());
-app.use(express.static(`${__dirname}/examples`))
+app.use(express.static(`${__dirname}`))
 
 app.get('/', (req, res) => {
     console.log("皮皮虾我们倒着走")
+    res.redirect('/examples')
 })
 app.post('/examples/uploadImage', (req, res) => {
     existsSync(saveImageDir);

@@ -5,7 +5,7 @@
     <title>实例</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="format-detection" content="telephone=no"/>
-    <link rel="stylesheet" href="/libs/ljkUpload.min.css">
+    <link rel="stylesheet" href="../libs/ljkUpload.min.css">
 </head>
 <body>
 <div class="headImg-popup">
@@ -20,7 +20,7 @@
         <input type="range" max="3.0" min="0.1" value="1.0" step="0.01" class="inp" id="range">
     </div>
     <aside class="text-center mt2rem">
-        <input type="file" accept="image/*" multiple id="file-btn" class="hidden">
+        <input type="file" accept="image/*" id="file-btn" class="hidden">
         <button class="btn btn-blue upload-select-btn">选择图片</button>
         <button class="btn btn-primary upload-upload-btn">立即上传</button>
     </aside>
@@ -30,8 +30,8 @@
     </ul>
 </section>
 </body>
-<script src="/libs/jquery.min.js"></script>
-<script src="/libs/ljkUpload.min.js"></script>
+<script src="../libs/jquery.min.js"></script>
+<script src="../libs/ljkUpload.min.js"></script>
 <script>
     $(function () {
         var ljkUpload = new LjkUpload($(".headImg-popup"));
