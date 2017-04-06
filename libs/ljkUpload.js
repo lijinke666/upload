@@ -110,18 +110,18 @@
                 mouseOffsetY = 0,
                 isDown = false;
             //按下
-            options.ele.on("mousedown touchstart", function (e) {
-                var touche = isPc ? e : e.targetTouches[0];
+            options.ele.on(isPc ? "mousedown" : "touchstart", function (e) {
+                var touche = isPc ? e : (e.originalEvent.targetTouches[0] || e.targetTouches[0]);
                 isDown = true;
                 mouseOffsetX = touche.pageX - ~~(this.getBoundingClientRect(options.ele.get(0)).left);
                 mouseOffsetY = touche.pageY - ~~(this.getBoundingClientRect(options.ele.get(0)).top);
             });
             //离开
-            options.ele.on("mousemove touchmove", function (e) {
+            options.ele.on(isPc ? "mousemove": "touchmove", function (e) {
                 e.preventDefault();
                 var mouseX = 0,
                     mouseY = 0;
-                var touche = isPc ? e : e.targetTouches[0];
+                var touche = isPc ? e : (e.originalEvent.touches[0] || e.originalEvent.changedTouches[0] || e.targetTouches[0]);
                 if (isDown === true) {
                     mouseX = touche.pageX - mouseOffsetX;
                     mouseY = touche.pageY - mouseOffsetY;
@@ -132,12 +132,12 @@
                 }
             });
             //弹起
-            options.ele.on("mouseup touchend", function (e) {
+            options.ele.on(isPc ? "mouseup" : "touchend", function (e) {
                 e.preventDefault();
                 isDown = false;
             });
             //移出
-            options.ele.on("mouseout", function (e) {
+            options.ele.on(isPc ? "mouseout" :"touchcancel", function (e) {
                 e.preventDefault();
                 isDown = false;
             });
