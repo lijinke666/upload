@@ -111,7 +111,7 @@
                 isDown = false;
             //按下
             options.ele.on("mousedown touchstart", function (e) {
-                var touche = isPc ? e : event.targetTouches[0];
+                var touche = isPc ? e : e.targetTouches[0];
                 isDown = true;
                 mouseOffsetX = touche.pageX - ~~(this.getBoundingClientRect(options.ele.get(0)).left);
                 mouseOffsetY = touche.pageY - ~~(this.getBoundingClientRect(options.ele.get(0)).top);
@@ -121,7 +121,7 @@
                 e.preventDefault();
                 var mouseX = 0,
                     mouseY = 0;
-                var touche = isPc ? e : event.targetTouches[0];
+                var touche = isPc ? e : e.targetTouches[0];
                 if (isDown === true) {
                     mouseX = touche.pageX - mouseOffsetX;
                     mouseY = touche.pageY - mouseOffsetY;
