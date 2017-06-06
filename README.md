@@ -1,10 +1,8 @@
-# LjkUpLoad.js
-`(npm or yarn) install`
-============
-`(yarn or npm) start`
+#### LjkUpLoad.js
+##### jQuery头像裁剪上传插件
 
-:)
-`npm start`
+#####如果你需要看例子 请 `npm i` or `yarn`
+##### 然后 `npm run server`
 
 ##客户端
 *********************************
