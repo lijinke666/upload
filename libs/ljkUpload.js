@@ -1,9 +1,8 @@
 /**
  * Created by jinle.li on 2016/7/13.
  * By: 李金珂小朋友
- * 图片裁剪上传,
- * 文件小组件
- * v 0.3
+ * 图片裁剪 & 文件上传 小插件,
+ * v 0.4
  *  ：）
  */
 (function ($) {
@@ -12,6 +11,10 @@
     };
     LjkUpload.prototype = {
         //是否为PC   返回 true 或 false
+        fileTypeConfig: {
+            "img": "图片",
+            "file": "文件"
+        },
         isPc: function () {
             var userAgent = navigator.userAgent;
             var AgentsArray = ["Android", "iPhone", "SymbianOS", "Windows Phone", "iPad", "iPod"];
@@ -48,7 +51,7 @@
          * @param title            标题
          * @param showTime        显示时间
          */
-        notice: function (msg, showTime,onHideHandler,title) {
+        notice: function (msg, showTime, onHideHandler, title) {
             title = title ? title : '提示';
             var $dom = $('<div class="jmcpopup modal" style="display:block"><div class="mask"></div><div class="jmcpopup-wrap modal-wrap ctrl-modal"><div class="modal-title"><h2 class="none">' + title + '</h2></div><table><tr><td><h1 class="none mt20">' + msg + '</h1></td></tr></table></div></div>');
             $('body').append($dom);
@@ -80,10 +83,10 @@
                 return
             }
             options.fileSelectBtn
-            ? options.fileSelectBtn.on("click", function () {
-                options.fileBtn.click();
-            })
-            : options.fileBtn.click();
+                ? options.fileSelectBtn.on("click", function () {
+                    options.fileBtn.click();
+                })
+                : options.fileBtn.click();
 
         },
 
@@ -121,7 +124,7 @@
                 mouseOffsetY = touche.pageY - ~~(this.getBoundingClientRect(options.ele.get(0)).top);
             });
             //离开
-            options.ele.on(isPc ? "mousemove": "touchmove", function (e) {
+            options.ele.on(isPc ? "mousemove" : "touchmove", function (e) {
                 e.preventDefault();
                 var mouseX = 0,
                     mouseY = 0;
@@ -141,7 +144,7 @@
                 isDown = false;
             });
             //移出
-            options.ele.on(isPc ? "mouseout" :"touchcancel", function (e) {
+            options.ele.on(isPc ? "mouseout" : "touchcancel", function (e) {
                 e.preventDefault();
                 isDown = false;
             });
@@ -167,13 +170,55 @@
             var _this = this;
             _this.selectImg(options);
             //获取到文件时
-            options.fileBtn.change(function () {
+
+            _this.getFileInfo(options.fileBtn, options.maxSize, _this.fileTypeConfig['img'], function (data) {
+                _this.loadImage(data.result).then(image => {
+                    options.fileSelectBtn && options.fileSelectBtn.addClass("success-linear");
+                    options.showEle.html('').append(image).removeClass("hasImg");
+                    options.callback && options.callback(data.result)
+                }).catch(e => {
+                    throw new Error(e);
+                })
+
+                var $range = $('input[type="range"]'),
+                    scale = Number($range.val());     //强制类型转换 
+                //取整 parseInt ||  >>0  ||  ~~ 都可以
+                options.showEle.get(0).onmousewheel = function (e) {
+                    var target,
+                        ee = e || window.event;
+                    target = ee.delta ? ee.delta : ee.wheelDelta;    //火狐有特殊
+                    if (target > 0) {
+                        scale += 0.05;
+                        scale = Math.min(scale, 3.0);
+                        $range.val(scale);
+                        _this.ToScale(options.showEle, scale)
+                    } else if (target < 0) {
+                        scale -= 0.05;
+                        scale = Math.max(0, scale);
+                        $range.val(scale);
+                        _this.ToScale(options.showEle, scale)
+                    } else {
+                        return false;
+                    }
+                };
+
+                options.fileBtn.blur();
+
+
+            })
+        },
+        getFileInfo: function (fileBtn, maxSize, fileType, callback) {
+            var _this = this
+            fileType = fileType || _this.fileTypeConfig['file']
+            fileBtn.change(function () {
                 if (!window.FileReader) {
                     _this.notice("浏览器版本过低");
                     return;
                 }
                 if (this.files.length && this.files.length > 1) {
-                    _this.notice("只能上传1张图片:)");
+                    fileType == _this.fileTypeConfig['img']
+                        ? _this.notice("只能上传1张图片:)")
+                        : _this.notice("只能上传1个文件:)")
                     return;
                 }
                 //将对象转换为数组 Array.prototype.slice.call(obj);
@@ -183,17 +228,19 @@
 
                 files.forEach(function (file, i) {
                     //jpeg png gif    like  "/images/jpeg"     i对大小写不敏感
-                    var fileType = /\/(?:jpeg|png|gif)/i;          //图片
-                    // var type = file.type.split("/").pop();
-                    var type = file.type.match(/image\/(\w*)/)[1];    //获取文件的类型
-                    if (!fileType.test(file.type)) {
-                        _this.notice("不支持" + type + "格式的图片哟");
-                        return;
+                    if (fileType == _this.fileTypeConfig['img']) {
+                        var reg = /\/(?:jpeg|jpg|png|gif)/i;          //图片
+                        // var type = file.type.split("/").pop();
+                        var type = file.type.match(/image\/(\w*)/)[1];    //获取文件的类型
+                        if (!reg.test(file.type)) {
+                            _this.notice("不支持" + type + "格式的" + fileType + "哟");
+                            return;
+                        }
                     }
-                    if (options.maxSize != 'undefined' && typeof options.maxSize == 'number') {
+                    if (maxSize != 'undefined' && typeof maxSize == 'number') {
                         var fileSize = file.size / 1024;
-                        if (fileSize > options.maxSize) {
-                            _this.notice("抱歉,图片最大为 " + options.maxSize + " KB");
+                        if (fileSize > maxSize) {
+                            _this.notice("抱歉," + fileType + " 最大为 " + maxSize + " KB");
                             return;
                         }
                     }
@@ -211,50 +258,24 @@
                     };
                     //读取中断
                     reader.onabort = function () {
-                       _this.removeLoading();
+                        _this.removeLoading();
                         _this.notice("网络异常!");
                     };
                     //读取成功
                     reader.onload = function () {
-                         _this.removeLoading();
+                        _this.removeLoading();
                         var result = this.result;        //读取失败时  null   否则就是读取的结果
-                        _this.loadImage(result).then(image => {
-                            options.fileSelectBtn && options.fileSelectBtn .addClass("success-linear");
-                            options.showEle.html('').append(image).removeClass("hasImg");
-                            options.callback && options.callback(result)
-                        }).catch(e => {
-                            throw new Error(e);
+                        callback && callback({
+                            name: file.name,
+                            type: file.type,
+                            size: file.size,
+                            result: result
                         })
-
-                        var $range = $('input[type="range"]'),
-                            scale = Number($range.val());     //强制类型转换 
-                        //取整 parseInt ||  >>0  ||  ~~ 都可以
-                        options.showEle.get(0).onmousewheel = function (e) {
-                            var target,
-                                ee = e || window.event;
-                            target = ee.delta ? ee.delta : ee.wheelDelta;    //火狐有特殊
-                            if (target > 0) {
-                                scale += 0.05;
-                                scale = Math.min(scale, 3.0);
-                                $range.val(scale);
-                                _this.ToScale(options.showEle, scale)
-                            } else if (target < 0) {
-                                scale -= 0.05;
-                                scale = Math.max(0, scale);
-                                $range.val(scale);
-                                _this.ToScale(options.showEle, scale)
-                            } else {
-                                return false;
-                            }
-                        };
-
-                        options.fileBtn.blur();
                     };
-                    //注入图片或文件  转换成base64
                     reader.readAsDataURL(file);      //base64
-                    // reader.readAsBinaryString( file );      //二进制
                 })
-            });
+            })
+
         },
         loadImage: function (src) {
             return new Promise((res, rej) => {
@@ -379,10 +400,11 @@
                 }
             })
         },
+        //图片裁剪上传
         clipUpload: function (options) {
             var defaults = {
                 fileBtn: $('input[type="file"]'),
-                fileSelectBtn: $('upload-select-btn'),
+                fileSelectBtn: $('.upload-select-btn'),
                 showEle: $('.move-image'),
                 maxSize: 1024,
                 range: $("#range"),
@@ -412,6 +434,60 @@
                 clipError: function (e) {
                     options.error(e)
                 }
+            })
+        },
+        //文件上传(待进度条)
+        fileUpload: function (options) {
+            var defaults = {
+                fileBtn: $('input[type="file"]'),
+                fileSelectBtn: $('.upload-select-btn'),
+                fileUploadBtn: $('.upload-upload-btn'),
+                maxSize: 1024,
+                onChange: function () { },
+                progress: function () { }
+            }
+            var options = $.extend(defaults, options)
+            var _this = this
+            if (!options.url) throw new Error('No upload address specified')
+            var xhr = new XMLHttpRequest()
+            _this.selectImg({
+                fileBtn: options.fileBtn,
+                fileSelectBtn: options.fileSelectBtn,
+                fileUploadBtn: options.fileUploadBtn
+            })
+            //获取到文件时
+            _this.getFileInfo(options.fileBtn, options.maxSize, _this.fileTypeConfig['file'], function (result) {
+                options.onChange(result)
+                options.fileUploadBtn.on('click', function () {
+                    var formData = new FormData(options.form[0])
+                    xhr.onloadstart = function () {
+                        console.log("load start");
+                    }
+                    xhr.onerror = function (e) {
+                        options.error && options.error(e)
+                    }
+                    xhr.onload = function () {
+                        var result = JSON.parse(xhr.responseText)
+                        options.success && options.success(result)
+                        console.log("上传成功")
+                    }
+                    xhr.onabort = function (event) {
+                        _this.notice('传输中断!')
+                    }
+                    xhr.ontimeout = function () {
+                        _this.notice('连接超时!')
+                    }
+                    xhr.onloadend = function () {
+                        console.log('传输结束')
+                    }
+                    xhr.upload.onprogress = function (e) {
+                        var progress = Math.round(e.loaded * 100 / e.total)
+                        options.progress && options.progress(progress)
+                    }
+
+                    xhr.open('POST', options.url, true)
+                    xhr.send(formData)
+                })
             })
         },
         fileTypeRegExp: function (fileType, reg) {

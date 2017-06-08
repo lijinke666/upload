@@ -11,6 +11,7 @@
     "gulp-clean-css": "^3.0.2",
     "gulp-concat": "^2.6.1",
     "gulp-rename": "^1.2.2",
-    "gulp-rev-append": "^0.1.8"
+    "gulp-rev-append": "^0.1.8",
+    "multiparty": "^4.1.3"
   }
 }

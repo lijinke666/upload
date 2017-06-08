@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>文件上传例子</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="format-detection" content="telephone=no"/>
+    <link rel="stylesheet" href="../libs/ljkUpload.min.css">
+</head>
+<body>
+<div class="root">
+     <form method="post" name="upload-file-form" encType="multipart/form-data" className="upload-file-form">
+        <p>
+            文件名字: <span class="file-name"></span>
+            文件大小: <span class="file-size"></span>
+        </p>
+        <progress value="0" max="100"></progress>
+        上传进度:<span class="progress-text">--</span>%
+        <aside class="text-center mt2rem">
+            <input type="file" name="file" class="file-btn hidden">
+            <button type="button" class="btn btn-blue upload-select-btn">选择文件</button>
+            <button type="button" class="btn btn-primary upload-upload-btn">立即上传</button>
+        </aside>
+    </form>
+</div>
+</body>
+<script src="../libs/jquery.min.js"></script>
+<script src="../libs/ljkUpload.js"></script>
+<script>
+    var fetchUrl = "/examples/uploadFile"
+    $(function () {
+        var ljkUpload = new LjkUpload($(".root"));
+        
+        ljkUpload.fileUpload({
+            url:fetchUrl,
+            form:$('form[name="upload-file-form"]'),
+            fileBtn:$('.file-btn'),
+            fileSelectBtn:$('.upload-select-btn'),
+            fileUploadBtn:$('.upload-upload-btn'),
+            onChange:function(result){      //文件选择事件返回 文件的size,type,name,流
+                $('.file-name').html(result.name)
+                $('.file-size').html(result.size)
+            },
+            progress:function(progress){
+                $('.progress-text').html(progress)
+                $('progress').val(progress)
+            },
+            success:function(result){
+                console.log(result)
+                ljkUpload.notice('上传成功')
+            },
+            error:function(e){
+                console.log('error',e)
+            }
+        })
+    })
+
+</script>
+</html>
