@@ -4,7 +4,7 @@
 
 ***
 
-#####如果你需要看例子 请 `npm i` or `yarn`
+#####如果你需要服务端的例子 请 `npm i` or `yarn`
 ##### 然后 `npm run server`
 #### 垃圾源码中我写了很多注释,大家一起学习进步 :) 。。逃(
 
@@ -62,6 +62,6 @@
 ***
     
 ##服务端
-app.js
+server.js
 提供一个 服务端接受 base64图片的例子
 #imageClip.html 是一个原生js版本的图片裁剪例子 =>>> to NaNa :)
