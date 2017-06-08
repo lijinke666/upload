@@ -1,7 +1,7 @@
  LjkUpLoad.js
 ====================
  jQuery头像裁剪上传插件
----------------------------
+
 ***
 
 #####如果你需要看例子 请 `npm i` or `yarn`
@@ -48,7 +48,7 @@
 
 ***
 
->> 如果你需要弹窗提示 使用  `notick()`  请参考 `examples/clip_upload_example.html`
+>> 如果你需要弹窗提示 使用  `notice()`  请参考 `examples/clip_upload_example.html`
 >>>      
     /**
         *
