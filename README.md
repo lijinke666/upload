@@ -34,6 +34,7 @@
 
 >> (例子 2)  `fileUpload`  文件上传（带进度条功能）  请参考 `examples/file_upload_example.html`
 >>>
+     var ljkUpload = new LjkUpload($(rootElement);
      ljkUpload.fileUpload({
          url:fetchUrl,                                       //后端接口地址
          form:param,            //表单  
@@ -61,16 +62,16 @@
 >> 如果你只需要图片预览  请使用 `showImage()`    请参考 `examples/show_images_example.html`
 >>>         
     var ljkUpload = new LjkUpload($(".root"));
-        ljkUpload.showImage({
-            fileBtn:param,          //file 文件按钮
-            fileSelectBtn:param,    //美化后的选择按钮 (可不选)
-            showEle: param,         //图片展示区域
-            maxSize: param,         //图片大小 (KB)
-            callback:function(data){    //回调      返回base64图片
-                //base64 图片
-                console.log(data);
-            }
-        })
+    ljkUpload.showImage({
+        fileBtn:param,          //file 文件按钮
+        fileSelectBtn:param,    //美化后的选择按钮 (可不选)
+        showEle: param,         //图片展示区域
+        maxSize: param,         //图片大小 (KB)
+        callback:function(data){    //回调      返回base64图片
+            //base64 图片
+            console.log(data);
+        }
+    })
 
 ***
 
