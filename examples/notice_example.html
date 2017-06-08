@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>提示弹窗例子</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="format-detection" content="telephone=no"/>
+    <link rel="stylesheet" href="../libs/ljkUpload.min.css">
+
+</head>
+<body>
+<section class="root">
+    <h2>提供 提示 <code>notice()</code>方法</h2>
+    <button class="btn-notice">提示</button>
+</section>
+</body>
+<script src="../libs/jquery.min.js"></script>
+<script src="../libs/ljkUpload.js"></script>
+<script>
+    //预览图片
+    $(function () {
+        var ljkUpload = new LjkUpload($(".root"));
+
+        $('.btn-notice').on('click',function(){
+            ljkUpload.notice('李金珂真帅',2000,function(){
+
+            },'自定义标题')
+        })
+    })
+
+</script>
+</html>

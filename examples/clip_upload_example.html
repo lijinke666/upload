@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>实例</title>
+    <title>裁剪上传例子</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="format-detection" content="telephone=no"/>
     <link rel="stylesheet" href="../libs/ljkUpload.min.css">
@@ -36,7 +36,7 @@
     $(function () {
         var ljkUpload = new LjkUpload($(".headImg-popup"));
 
-        ljkUpload.upload({
+        ljkUpload.clipUpload({
             fileBtn:$("input[type='file']"),          //file 文件按钮
             fileSelectBtn:$(".upload-select-btn"),    //文件选择按钮
             uploadBtn:$(".upload-upload-btn"),        //文件上传按钮
@@ -53,7 +53,7 @@
                     dataType:"json",
                     success:function(res){
                         if(res.success)
-                            ljkUpload.ljkUpLoadAlert('上传成功')
+                            ljkUpload.notice('上传成功')
                     }
                 })
             },

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>预览图片例子</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="format-detection" content="telephone=no"/>
+    <link rel="stylesheet" href="../libs/ljkUpload.min.css">
+    <style>
+        .img-container{
+            width:200px;
+            height:200px;
+            overflow: hidden;
+            border:1px solid
+        }
+        .img-container > img {
+            width:100%;
+        }
+    </style>
+</head>
+<body>
+<section class="root">
+    <input type="file" value="选择图片" class="file-btn">
+    <div class="img-container">
+        
+    </div>
+</section>
+</body>
+<script src="../libs/jquery.min.js"></script>
+<script src="../libs/ljkUpload.js"></script>
+<script>
+    //预览图片
+    $(function () {
+        var ljkUpload = new LjkUpload($(".root"));
+        ljkUpload.showImage({
+            fileBtn:$('.file-btn'),
+            showEle:$('.img-container'),
+            maxSize:1024,
+            callback:function(data){
+                //base64 图片
+                console.log(data);
+            }
+        })
+    })
+
+</script>
+</html>

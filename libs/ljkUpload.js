@@ -1,7 +1,8 @@
 /**
  * Created by jinle.li on 2016/7/13.
  * By: 李金珂小朋友
- * 图片裁剪上传小组件
+ * 图片裁剪上传,
+ * 文件小组件
  * v 0.3
  *  ：）
  */
@@ -28,7 +29,7 @@
          *
          * @param msg  loading动画 文字信息
          */
-        ljkUpLoadAnimate: function (msg) {
+        loading: function (msg) {
             msg = msg ? msg : '请稍后';
             var list = "";
             for (var i = 1; i <= 12; i++) {
@@ -47,8 +48,8 @@
          * @param title            标题
          * @param showTime        显示时间
          */
-        ljkUpLoadAlert: function (msg, onHideHandler, title, showTime) {
-            title = title ? title : '金珂提示你';
+        notice: function (msg, showTime,onHideHandler,title) {
+            title = title ? title : '提示';
             var $dom = $('<div class="jmcpopup modal" style="display:block"><div class="mask"></div><div class="jmcpopup-wrap modal-wrap ctrl-modal"><div class="modal-title"><h2 class="none">' + title + '</h2></div><table><tr><td><h1 class="none mt20">' + msg + '</h1></td></tr></table></div></div>');
             $('body').append($dom);
 
@@ -70,17 +71,20 @@
         },
 
         //删除loading动画
-        delete: function (ele) {
-            ele.remove();
+        removeLoading: function () {
+            $('.removeLoading').remove();
         },
 
         selectImg: function (options) {
             if (typeof options != "object") {
                 return
             }
-            options.fileSelectBtn.on("click", function () {
+            options.fileSelectBtn
+            ? options.fileSelectBtn.on("click", function () {
                 options.fileBtn.click();
-            });
+            })
+            : options.fileBtn.click();
+
         },
 
         getBoundingClientRect: function (ele) {
@@ -146,10 +150,11 @@
         //展示图片
         /**
          *
-         * @param fileSelectBtn     文件选择按钮
+         * @param fileSelectBtn     文件美化后的选择按钮 可不选
          * @param fileBtn     文件按钮
          * @param showEle     图片显示区域
          * @param maxSize     图片最大限制  KB
+         * @param callback    回调    返回base64图片
          */
         showImage: function (options) {
             var defaults = {
@@ -164,11 +169,11 @@
             //获取到文件时
             options.fileBtn.change(function () {
                 if (!window.FileReader) {
-                    _this.ljkUpLoadAlert("浏览器版本过低");
+                    _this.notice("浏览器版本过低");
                     return;
                 }
                 if (this.files.length && this.files.length > 1) {
-                    _this.ljkUpLoadAlert("只能上传1张图片:)");
+                    _this.notice("只能上传1张图片:)");
                     return;
                 }
                 //将对象转换为数组 Array.prototype.slice.call(obj);
@@ -182,13 +187,13 @@
                     // var type = file.type.split("/").pop();
                     var type = file.type.match(/image\/(\w*)/)[1];    //获取文件的类型
                     if (!fileType.test(file.type)) {
-                        _this.ljkUpLoadAlert("不支持" + type + "格式的图片哟");
+                        _this.notice("不支持" + type + "格式的图片哟");
                         return;
                     }
                     if (options.maxSize != 'undefined' && typeof options.maxSize == 'number') {
                         var fileSize = file.size / 1024;
                         if (fileSize > options.maxSize) {
-                            _this.ljkUpLoadAlert("抱歉,图片最大为 " + options.maxSize + " KB");
+                            _this.notice("抱歉,图片最大为 " + options.maxSize + " KB");
                             return;
                         }
                     }
@@ -197,25 +202,26 @@
 
                     //读取中
                     reader.onprogress = function () {
-                        _this.ljkUpLoadAnimate("读取中,请稍后");
+                        _this.loading("读取中,请稍后");
                     };
                     //读取失败
                     reader.onerror = function () {
-                        _this.delete($(".removeLoading"));
-                        _this.ljkUpLoadAlert("读取失败");
+                        _this.removeLoading();
+                        _this.notice("读取失败");
                     };
                     //读取中断
                     reader.onabort = function () {
-                        _this.delete($(".removeLoading"));
-                        _this.ljkUpLoadAlert("网络异常!");
+                       _this.removeLoading();
+                        _this.notice("网络异常!");
                     };
                     //读取成功
                     reader.onload = function () {
-                        _this.delete($(".removeLoading"));
+                         _this.removeLoading();
                         var result = this.result;        //读取失败时  null   否则就是读取的结果
                         _this.loadImage(result).then(image => {
-                            options.fileSelectBtn.addClass("success-linear");
+                            options.fileSelectBtn && options.fileSelectBtn .addClass("success-linear");
                             options.showEle.html('').append(image).removeClass("hasImg");
+                            options.callback && options.callback(result)
                         }).catch(e => {
                             throw new Error(e);
                         })
@@ -336,7 +342,7 @@
             options.uploadBtn.on("click", function () {
                 try {
                     if (options.uploadImageBox.hasClass("hasImg")) {
-                        _this.ljkUpLoadAlert("请选择图片");
+                        _this.notice("请选择图片");
                         return;
                     }
                     var $img = options.uploadImageBox.find("img"),
@@ -373,7 +379,7 @@
                 }
             })
         },
-        upload: function (options) {
+        clipUpload: function (options) {
             var defaults = {
                 fileBtn: $('input[type="file"]'),
                 fileSelectBtn: $('upload-select-btn'),
