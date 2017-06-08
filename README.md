@@ -22,17 +22,17 @@
 >>>
     var ljkUpload = new LjkUpload($(rootElement);
     ljkUpload.clipUpload({
-        fileBtn:param,          //file 文件按钮
-        fileSelectBtn:param,    //美化后的选择按钮 (可不选)
-        uploadBtn:param,        //文件上传按钮
-        showEle:param,                 //图片移动区域   
-        quality:param                              //图片压缩  0-1  可不选
-        maxSize:param                             //文件大小限制   默认1M
-        range:param,                        //滑块                           
-        success:function( image ){                //裁剪成功callback  返回base64图片
+        fileBtn:param,                          //file 文件按钮
+        fileSelectBtn:param,                    //美化后的选择按钮 (可不选)
+        uploadBtn:param,                        //文件上传按钮
+        showEle:param,                          //图片移动区域   
+        quality:param                           //图片压缩  0-1  可不选
+        maxSize:param                           //文件大小限制   默认1M
+        range:param,                            //滑块                           
+        success:function( image ){              //裁剪成功callback  返回base64图片
             //do something ...
         },
-        error:function(e){                        //裁剪失败callback  返回错误信息
+        error:function(e){                      //裁剪失败callback  返回错误信息
             console.error(e)
         }    
     })
@@ -44,7 +44,7 @@
      var ljkUpload = new LjkUpload($(rootElement);
      ljkUpload.fileUpload({
          url:fetchUrl,                                       //后端接口地址
-         form:param,            //表单  
+         form:param,                                         //表单  
          fileBtn:param,                                      //文件file按钮
          fileSelectBtn:param,                                //美化后的file选择按钮 可不选
          fileUploadBtn:param,                                //文件上传按钮
@@ -52,7 +52,7 @@
               //这里可以拿到数据，显示在页面上
 
          },
-         progress:function(progress){                        //文件上传进度事件  返回文件的上传进度
+         progress:function(progress){                        //文件上传进度事件  返回文件的       //上传进度
               //这里可以拿到进度，显示在页面上
          },
          success:function(result){                           //上传成功回调    返回后端传过来的response
@@ -70,10 +70,10 @@
 >>>         
     var ljkUpload = new LjkUpload($(".root"));
     ljkUpload.showImage({
-        fileBtn:param,          //file 文件按钮
-        fileSelectBtn:param,    //美化后的选择按钮 (可不选)
-        showEle: param,         //图片展示区域
-        maxSize: param,         //图片大小 (KB)
+        fileBtn:param,              //file 文件按钮
+        fileSelectBtn:param,        //美化后的选择按钮 (可不选)
+        showEle: param,             //图片展示区域
+        maxSize: param,             //图片大小 (KB)
         callback:function(data){    //回调      返回base64图片
             //base64 图片
             console.log(data);
@@ -82,7 +82,7 @@
 
 ***
 
->> 如果你需要弹窗提示 使用  `notice()`  请参考 `examples/clip_upload_example.html`
+>> 如果你需要弹窗提示 使用  `notice()`  请参考 `examples/notice_example.html`
 >>>      
     /**
         *
