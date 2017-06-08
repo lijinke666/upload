@@ -1,6 +1,6 @@
  LjkUpLoad.js
 ====================
- jQuery头像裁剪上传插件
+ jQuery（文件上传|头像裁剪上传）渣渣插件
 
 ***
 
@@ -32,7 +32,33 @@
 
 ***
 
->> (例子 2)  `showImage()`  图片预览   请参考 `examples/clip_upload_example.html`
+>> (例子 2)  `fileUpload`  文件上传（带进度条功能）  请参考 `examples/file_upload_example.html`
+>>>
+     ljkUpload.fileUpload({
+         url:fetchUrl,                                       //后端接口地址
+         form:param,            //表单  
+         fileBtn:param,                                      //文件file按钮
+         fileSelectBtn:param,                                //美化后的file选择按钮 可不选
+         fileUploadBtn:param,                                //文件上传按钮
+         onChange:function(result){                          //文件选择事件  返回一个对象，分别是文件的 size,type,name,流
+              //这里可以拿到数据，显示在页面上
+
+         },
+         progress:function(progress){                        //文件上传进度事件  返回文件的上传进度
+              //这里可以拿到进度，显示在页面上
+         },
+         success:function(result){                           //上传成功回调    返回后端传过来的response
+             //do something .... 
+         },
+         error:function(e){                                  //上传失败回调    返回错误信息
+            console.log('error',e)
+         }
+     })
+
+***
+
+
+>> 如果你只需要图片预览  请使用 `showImage()`    请参考 `examples/show_images_example.html`
 >>>         
     var ljkUpload = new LjkUpload($(".root"));
         ljkUpload.showImage({
@@ -40,8 +66,8 @@
             fileSelectBtn:param,    //美化后的选择按钮 (可不选)
             showEle: param,         //图片展示区域
             maxSize: param,         //图片大小 (KB)
-            callback:function(data){    //回调
-                //base64 图片
+            callback:function(data){    //回调      返回base64图片
+                //base64 图片
                 console.log(data);
             }
         })
