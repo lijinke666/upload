@@ -35,6 +35,8 @@
 >> (例子 1)  `clipUpload()`  图片裁剪上传   请参考 `examples/clip_upload_example.html`
 >> (example 1) `clipUpload()` head cut upload , please reference `examples/clip_upload_example.html`
 >>>
+
+```
     var ljkUpload = new LjkUpload($(rootElement);
     ljkUpload.clipUpload({
         fileBtn:param,                          //file 文件按钮       your file btn
@@ -51,11 +53,16 @@
             console.error(e)
         }    
     })
+    
+```
 
 ***
 
->> (例子 2)  `fileUpload`  文件上传（带进度条功能）  请参考 `examples/file_upload_example.html`
+>> (例子 2)  `fileUpload()`  文件上传（带进度条功能）  请参考 `examples/file_upload_example.html`
+>> (example 2) `fileUpload()` file upload( support progress) , please reference `examples/file_upload_example.html`
 >>>
+
+```
      var ljkUpload = new LjkUpload($(rootElement);
      ljkUpload.fileUpload({
          url:fetchUrl,                                       //后端接口地址  The back-end interface address
@@ -77,6 +84,8 @@
             console.log('error',e)                            upload error callback return error message
          }
      })
+     
+```
 
 ***
 
