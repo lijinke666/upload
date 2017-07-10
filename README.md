@@ -36,7 +36,7 @@
 >> (example 1) `clipUpload()` head cut upload , please reference `examples/clip_upload_example.html`
 >>>
 
-```
+```javascript
     var ljkUpload = new LjkUpload($(rootElement);
     ljkUpload.clipUpload({
         fileBtn:param,                          //file 文件按钮       your file btn
@@ -62,7 +62,7 @@
 >> (example 2) `fileUpload()` file upload( support progress) , please reference `examples/file_upload_example.html`
 >>>
 
-```
+```javascript
      var ljkUpload = new LjkUpload($(rootElement);
      ljkUpload.fileUpload({
          url:fetchUrl,                                       //后端接口地址  The back-end interface address
@@ -91,8 +91,9 @@
 
 
 >> 如果你只需要图片预览  请使用 `showImage()`    请参考 `examples/show_images_example.html`
->>>         
-    var ljkUpload = new LjkUpload($(".root"));
+>>>
+```javascript
+   var ljkUpload = new LjkUpload($(".root"));
     ljkUpload.showImage({
         fileBtn:param,              //file 文件按钮
         fileSelectBtn:param,        //美化后的选择按钮 (可不选)
@@ -103,11 +104,13 @@
             console.log(data);
         }
     })
+```
 
 ***
 
 >> 如果你需要弹窗提示 使用  `notice()`  请参考 `examples/notice_example.html`
->>>      
+>>>   
+```javascript
     /**
         *
         * @param msg             提示信息
@@ -116,6 +119,7 @@
         * @param title            标题
         */
     ljkUpload.notice(msg,showTime,onHideHandler,title)
+```
 
 ***
     
