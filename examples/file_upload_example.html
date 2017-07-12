@@ -6,6 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="format-detection" content="telephone=no"/>
     <link rel="stylesheet" href="../libs/ljkUpload.css">
+    <style>
+        body,html{
+            min-height:100%;
+        }
+    </style>
 </head>
 <body>
 <div class="root">
@@ -32,24 +37,27 @@
         var ljkUpload = new LjkUpload($(".root"));
         
         ljkUpload.fileUpload({
-            url:fetchUrl,
-            form:$('form[name="upload-file-form"]'),
-            fileBtn:$('.file-btn'),
-            fileSelectBtn:$('.upload-select-btn'),
-            fileUploadBtn:$('.upload-upload-btn'),
+            url:fetchUrl,                                    //后端请求地址
+            form:$('form[name="upload-file-form"]'),         //表单
+            fileBtn:$('.file-btn'),                           //文件按钮
+            fileSelectBtn:$('.upload-select-btn'),            //美化后的文件按钮 可不填
+            fileUploadBtn:$('.upload-upload-btn'),            //文件上传按钮
+            maxSize:1024,                                 //文件大小   默认1024 单位 kb
+            drag:true,                                 //支持拖拽      默认true    
+            dragArea:$('body') ,                //响应拖拽的区域    
             onChange:function(result){      //文件选择事件返回 文件的size,type,name,流
                 $('.file-name').html(result.name)
                 $('.file-size').html(result.size)
             },
-            progress:function(progress){
+            progress:function(progress){                    //正在传输  可以拿到 进度
                 $('.progress-text').html(progress)
                 $('progress').val(progress)
             },
-            success:function(result){
+            success:function(result){                       //成功回调  返回后端的数据
                 console.log(result)
                 ljkUpload.notice('上传成功')
             },
-            error:function(e){
+            error:function(e){                            //错误回调
                 console.log('error',e)
             }
         })

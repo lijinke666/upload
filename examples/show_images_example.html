@@ -33,10 +33,10 @@
     $(function () {
         var ljkUpload = new LjkUpload($(".root"));
         ljkUpload.showImage({
-            fileBtn:$('.file-btn'),
-            showEle:$('.img-container'),
-            maxSize:1024,
-            zoom:false,                           //图片可不可以缩放 默认 false
+            fileBtn:$('.file-btn'),               //文件按钮
+            showEle:$('.img-container'),          //显示区域
+            maxSize:1024,                         //[type] Number [default] 1024 [unit] kb
+            zoom:false,                           //图片可不可以缩放 [type] Boolean [default] false
             callback:function(data){
                 //base64 图片
                 console.log(data);

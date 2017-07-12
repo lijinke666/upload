@@ -2,6 +2,7 @@
  * Created by jinle.li on 2016/7/13.
  * By: 李金珂小朋友
  * 图片裁剪 & 文件上传 小插件,
+ * 支持拖拽上传,上传进度
  * v 0.5.0
  *  ：）
  */
@@ -111,9 +112,6 @@
             if (typeof options != "object") {
                 return
             }
-            var options = $.extend({
-                ele: $('.move-image')
-            }, options)
             var isPc = this.isPc();
             var mouseOffsetX = 0,
                 mouseOffsetY = 0,
@@ -316,18 +314,19 @@
                 return;
             }
             var _this = this;
-            var scale = Number(options.range.val());
+            var scale = _this.scale
             options.range.on("mousemove touchmove", function (e) {
                 var _this_ = $(this);
                 scale = Number(_this_.val());
+                options.range && options.range.val(scale)
                 _this.ToScale(options.ele, scale);
             }).prev().on("click touchstart", function () {
                 scale -= 0.01;
-                options.range.val(scale);
+                options.range && options.range.val(scale)
                 _this.ToScale(options.ele, scale)
             }).next().next().on("click touchstart", function () {
                 scale += 0.01;
-                options.range.val(scale);
+                options.range && options.range.val(scale)
                 _this.ToScale(options.ele, scale)
             });
         },
@@ -417,22 +416,18 @@
         //图片裁剪上传
         clipUpload: function (options) {
             var defaults = {
-                fileBtn: $('input[type="file"]'),
-                fileSelectBtn: $('.upload-select-btn'),
-                showEle: $('.move-image'),
                 maxSize: 1024,
-                range: $("#range"),
                 drag: true,
                 zoom: true,
-                drapArea: $('.upload-image-box'),
                 success: function () { },
                 error: function () { }
             }
             var options = $.extend(defaults, options)
             this.moveImage({
-                ele: options.moveEle
+                ele: options.showEle
             })
             this.showImage({
+                range: options.range,
                 fileSelectBtn: options.fileSelectBtn,
                 fileBtn: options.fileBtn,
                 showEle: options.showEle,
@@ -448,15 +443,15 @@
                 quality: options.quality,
                 clipSuccess: function (Src) {
                     options.success(Src)
-                    delete _this.files
                 },
                 clipError: function (e) {
                     options.error(e)
                 }
             })
-            options.drag && this.addListener({
+            options.drag === true && options.dragArea && this.addListener({
+                type: this.fileTypeConfig['img'],
                 fileBtn: options.fileBtn,
-                drapArea: options.drapArea,
+                dragArea: options.dragArea,
                 fileArea: options.showEle,
                 maxSize: options.maxSize
             })
@@ -464,9 +459,6 @@
         //文件上传(带进度条)
         fileUpload: function (options) {
             var defaults = {
-                fileBtn: $('input[type="file"]'),
-                fileSelectBtn: $('.upload-select-btn'),
-                fileUploadBtn: $('.upload-upload-btn'),
                 maxSize: 1024,
                 onChange: function () { },
                 progress: function () { }
@@ -521,59 +513,63 @@
         removeDrapAreaStyle: function (ele, className) {
             ele.removeClass(className || 'drapActive')
         },
-
+        stopAll: function (e) {
+            e.preventDefault && e.preventDefault() || e.originalEvent.preventDefault()
+            e.stopPropagation && e.stopPropagation() || e.originalEvent.stopPropagation()
+        },
         /**
          * 绑定拖拽事件 (文件|图片拖拽选择)
          * @param drapArea 拖拽文件相应区域 
          * @param fileArea 文件放置区域 
          * @param fileBtn 文件按钮 
          * @param zoom 缩放  默认 true 
+         * @param type 类型  文件还是 图片
          */
         addListener: function (options) {
             var defaults = {
-                drapArea: $('.upload-image-box'),
-                fileArea: $('.move-image'),
-                zoom: true
+                zoom: true,
+                type: this.fileTypeConfig['img']
             }
 
             var options = $.extend(defaults, options)
-            var $drapArea = options.drapArea
+            var $dragArea = options.dragArea
 
             var _this = this
 
             document.addEventListener('dragenter', function (e) {
-                _this.addDrapAreaStyle($drapArea)
-            })
+                _this.addDrapAreaStyle($dragArea)
+            },false)
             document.addEventListener('dragleave', function () {
-                _this.removeDrapAreaStyle($drapArea)
-            })
+                _this.removeDrapAreaStyle($dragArea)
+            },false)
             //进入
-            $drapArea.on('dragenter', function (e) {
-                e.preventDefault()
-                e.stopPropagation()
-                _this.addDrapAreaStyle($drapArea)
+            $dragArea.on('dragenter', function (e) {
+                console.log(1);
+                _this.stopAll(e)
+                _this.addDrapAreaStyle($dragArea)
             })
             //离开
-            $drapArea.on('dragleave', function (e) {
-                e.preventDefault()
-                e.stopPropagation()
-                _this.removeDrapAreaStyle($drapArea)
+            $dragArea.on('dragleave', function (e) {
+                console.log(2);
+                _this.stopAll(e)
+                _this.removeDrapAreaStyle($dragArea)
             })
             //移动
-            $drapArea.on('dragover', function (e) {
-                e.preventDefault()
-                e.stopPropagation()
-                (e.dataTransfer || e.originalEvent.dataTransfer).dropEffect = 'copy'        //设置文件放置类型为拷贝
+            $dragArea.on('dragover', function (e) {
+                console.log(22222);
+                console.log(e);
+                _this.stopAll(e)
+                    (e.dataTransfer || e.originalEvent.dataTransfer).dropEffect = 'copy'        //设置文件放置类型为拷贝
             })
 
             //放下
-            $drapArea.on('drop', function (e) {
-                 e.preventDefault()
-                e.stopPropagation()
+            $dragArea.on('drop', function (e) {
+                console.log(_this.isPc());
+                _this.stopAll(e)
                 var files = (e.dataTransfer || e.originalEvent.dataTransfer).files
-                _this.filterFileInfo(Array.from(files), _this.fileTypeConfig['img'], options.maxSize, function (data) {
-                    _this.appendImage(data.result, options.fileSelectBtn, options.fileArea)
-                    options.zoom && _this.bindmousewheel(options.range, options.fileArea)
+                _this.filterFileInfo(Array.from(files), options.type, options.maxSize, function (data) {
+                    options.type == optionsthis.fileTypeConfig['img'] && _this.appendImage(data.result, options.fileSelectBtn, options.fileArea)
+                    options.zoom === true && _this.bindmousewheel(options.range, options.fileArea)
                 })
             })
         },

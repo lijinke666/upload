@@ -1,9 +1,33 @@
 {
+  "author": "Jinke.Li",
+  "license": "MIT",
+  "description": "Jquery (fileUpload & imgClipUpload) Plugin ",
+  "name": "LjkUpload.js",
+  "version": "0.5.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lijinke666/LjkUpLoad"
+  },
+  "keywords": [
+    "jquery",
+    "plugin",
+    "HTML5",
+    "CSS3",
+    "html5",
+    "file",
+    "uplaod",
+    "clip",
+    "drag",
+    "drap",
+    "image",
+    "cover",
+    "progress"
+  ],
   "scripts": {
     "start": "node server",
     "cssMin": "gulp cssMin"
   },
-  "dependencies": {
+  "devDependencies": {
     "body-parser": "^1.16.1",
     "express": "^4.14.1",
     "gulp": "^3.9.1",
