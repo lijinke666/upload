@@ -88,6 +88,8 @@ localhost:1996
          fileBtn:param,                                      //文件file按钮   your file btn [type] Object is required
          fileSelectBtn:param,                                //美化后的file选择按钮 可不选    To replace the native button  (Not a choice)
          fileUploadBtn:param,                                //文件上传按钮   file upload button [type] object is required
+         drag:param,                                 //支持拖拽      file is drag 默认true [type] boolean [default] true    
+         dragArea:$('.drag-section') ,                //响应拖拽的区域    file dragArea [type] Object 
          onChange:function(result){                          //文件选择事件  返回一个对象，分别是文件的 size,type,name,流  [type] Function
               //这里可以拿到数据，显示在页面上                 return file (size | type | name)
 
