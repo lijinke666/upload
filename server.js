@@ -59,7 +59,7 @@ function existsSync(path) {
     }
 }
 
-app.set('port', process.env.PORT || 1996)
+app.set('port', process.env.PORT || 6661)
 const port = app.get('port')
 
 app.listen(port, () => console.log(`皮皮虾我们走 :port=> ${port}`))

@@ -13,6 +13,11 @@ body{
 .range-box>input{
     flex: 1
 }
+.drapActive{
+    border:2px dashed #eee !important;
+    background-color: rgba(0,0,0,.2) !important;
+    transition:border,background-color .3s
+}
 aside{
     display: flex;
     justify-content: space-around;

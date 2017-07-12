@@ -5,7 +5,7 @@
     <title>裁剪上传例子</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="format-detection" content="telephone=no"/>
-    <link rel="stylesheet" href="../libs/ljkUpload.min.css">
+    <link rel="stylesheet" href="../libs/ljkUpload.css">
 </head>
 <body>
 <div class="headImg-popup">
@@ -42,8 +42,10 @@
             uploadBtn:$(".upload-upload-btn"),        //文件上传按钮
             showEle:$(".move-image"),                 //图片移动区域            
             maxSize:1024,                        //文件大小限制   默认1M
-           // quality:0.92                              //图片压缩  0-1  可不选 默认 0.92
-            range:$("#range"),                        //滑块                           
+            quality:0.92,                              //图片压缩  0-1  可不选 默认 0.92
+            range:$("#range"),                        //滑块
+            drag:true,                                 //支持拖拽      默认true    
+            dragArea:$('.upload-image-box') ,          //响应拖拽的区域               
             success:function( image ){                //裁剪成功callback  返回base64图片
                 $('.showImage').append(`<li><img src="${image}"></li>`)
                 $.ajax({

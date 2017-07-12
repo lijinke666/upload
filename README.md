@@ -28,7 +28,8 @@
         showEle:param,                          //图片移动区域   
         quality:param                           //图片压缩  0-1  可不选
         maxSize:param                           //文件大小限制   默认1M
-        range:param,                            //滑块                           
+        range:param,                            //滑块
+        zoom:                           
         success:function( image ){              //裁剪成功callback  返回base64图片
             //do something ...
         },
