@@ -13,7 +13,7 @@ body{
 .range-box>input{
     flex: 1
 }
-.drapActive{
+.dragActive{
     border:1px dashed #eee !important;
     background-color: rgba(0,0,0,.2) !important;
     transition:border,background-color .3s

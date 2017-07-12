@@ -31,7 +31,7 @@
 </section>
 </body>
 <script src="../libs/jquery.min.js"></script>
-<script src="../libs/ljkUpload.js"></script>
+<script src="../libs/ljkUpload.min.js"></script>
 <script>
     $(function () {
         var ljkUpload = new LjkUpload($(".headImg-popup"));
@@ -42,10 +42,11 @@
             uploadBtn:$(".upload-upload-btn"),        //文件上传按钮
             showEle:$(".move-image"),                 //图片移动区域            
             maxSize:1024,                        //文件大小限制   默认1M
-            quality:0.92,                              //图片压缩  0-1  可不选 默认 0.92
+            // quality:0.92,                              //图片压缩  0-1  可不选 默认 0.92
             range:$("#range"),                        //滑块
             drag:true,                                 //支持拖拽      默认true    
-            dragArea:$('.upload-image-box') ,          //响应拖拽的区域               
+            dragArea:$('.upload-image-box') ,          //响应拖拽的区域  
+            dragAreaActiveClassName:"dragActive",                  //自定义拖拽区域 active样式            
             success:function( image ){                //裁剪成功callback  返回base64图片
                 $('.showImage').append(`<li><img src="${image}"></li>`)
                 $.ajax({

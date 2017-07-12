@@ -10,6 +10,14 @@
         body,html{
             min-height:100%;
         }
+        .drag-section{
+            margin:20px 0;
+            height:400px;
+            border:2px dashed #ccc;
+            line-height: 400px;
+            text-align: center;
+            font-size: 30px;
+        }
     </style>
 </head>
 <body>
@@ -27,10 +35,13 @@
             <button type="button" class="btn btn-primary upload-upload-btn">立即上传</button>
         </aside>
     </form>
+    <div class="drag-section">
+        将文件拖到这里
+    </div>
 </div>
 </body>
 <script src="../libs/jquery.min.js"></script>
-<script src="../libs/ljkUpload.js"></script>
+<script src="../libs/ljkUpload.min.js"></script>
 <script>
     var fetchUrl = "/examples/uploadFile"
     $(function () {
@@ -44,7 +55,7 @@
             fileUploadBtn:$('.upload-upload-btn'),            //文件上传按钮
             maxSize:1024,                                 //文件大小   默认1024 单位 kb
             drag:true,                                 //支持拖拽      默认true    
-            dragArea:$('body') ,                //响应拖拽的区域    
+            dragArea:$('.drag-section') ,                //响应拖拽的区域    
             onChange:function(result){      //文件选择事件返回 文件的size,type,name,流
                 $('.file-name').html(result.name)
                 $('.file-size').html(result.size)

@@ -7,39 +7,26 @@
 ***
 
 ##### 如果你需要一个完整的例子 包括后端 请：
-```
-npm install
-```
-或者
-```
-yarn
-```
-然后
-```
-npm start
-```
-
-
 ##### Example : If you need to look at the complete example, please run :
-
 ```
 npm install
 ```
-or
+或者 (or)
 ```
 yarn
 ```
-Then
+然后 (then)
 ```
 npm start
 ```
 
-open
+open your bower
 ```
-localhost:6661
+localhost:1996
+
 ```
 
-#### 然后访问
+#### 然后访问 (Then open)
 ---
 ##### open
 >
@@ -56,6 +43,7 @@ localhost:6661
 
 ## 客户端
 ## Client Examples
+
 *********************************
 > Examples
 >> (例子 1)  `clipUpload()`  图片裁剪上传   请参考 `examples/clip_upload_example.html`
@@ -69,12 +57,13 @@ localhost:6661
         fileSelectBtn:param,                    //美化后的选择按钮  [type] Object  非必选
         uploadBtn:param,                        //文件上传按钮    [type] Object  必选
         showEle:param,                          //图片移动区域     [type] Object  必选
-        quality:param                           //图片压缩  0-1   [type] Number [default] 0.92  非必选
+        quality:param                           //图片压缩  0-1   [type] Number [default] 0.92  非必选 不填格式为png 选了格式为jpg
         maxSize:param                           //文件大小限制   [type] Number [default] 1024kb  [unit] KB 非必选
         range:param,                            //滑块   [type] Object 非必选
         zoom:param,                             //鼠标是否可以控制图片缩放  [type] Boolean [default] true 非必选
-        drag:param,                             //是否可以拖拽上传  [type] Boolean [default] true  非必选           
-        drapArea:param,                         //拖拽的区域  [type] Object  如果不需要 这个参数可不传 drag 传 false drag 为 false时 非必选
+        drag:param,                             //是否可以拖拽上传  [type] Boolean [default] true  非必选        
+        dragArea:param,                         //拖拽的区域  [type] Object  如果不需要 这个参数可不传 drag 传 false drag 为 false时 非必选
+        dragAreaActiveClassName:param,          //自定义拖拽区域className [type] String [default] 'dragActive'
         success:function( image ){              //裁剪成功callback  返回base64图片 [type] Function  非必选
             //do something ...
         },

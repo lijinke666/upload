@@ -12,7 +12,9 @@
     };
     LjkUpload.prototype = {
         files: null,
-        scale: 1.0,
+        scale: 1.0,          //缩放比例
+        maxScale: 3.0,        //最大缩放
+        range: 0.05,          //每次缩放的量
         fileTypeConfig: {
             "img": "图片",
             "file": "文件"
@@ -42,7 +44,7 @@
                 list += "<div class='sk-circle" + i + " sk-child'></div>";
             }
             var doms = $("" +
-                "<div class='removeLoading jmcpopup modal' style='display: block'><div class='mask'><div class='loading'>" +
+                "<div class='removeLoading ljkPopup modal' style='display: block'><div class='mask'><div class='loading'>" +
                 "<div class='sk-circle'>" + list + "</div><p class='text-center fz18 color-white mt30'>" + msg + "</p></div></div>");
             $("body").append(doms);
         },
@@ -56,7 +58,7 @@
          */
         notice: function (msg, showTime, onHideHandler, title) {
             title = title ? title : '提示';
-            var $dom = $('<div class="jmcpopup modal" style="display:block"><div class="mask"></div><div class="jmcpopup-wrap modal-wrap ctrl-modal"><div class="modal-title"><h2 class="none">' + title + '</h2></div><table><tr><td><h1 class="none mt20">' + msg + '</h1></td></tr></table></div></div>');
+            var $dom = $('<div class="ljkPopup modal" style="display:block"><div class="mask"></div><div class="ljkPopup-wrap modal-wrap ctrl-modal"><div class="modal-title"><h2 class="none">' + title + '</h2></div><table><tr><td><h1 class="none mt20">' + msg + '</h1></td></tr></table></div></div>');
             $('body').append($dom);
 
             if (typeof showTime == 'undefined') {
@@ -173,13 +175,20 @@
             //获取到文件时
 
             _this.getFileInfo(options.fileBtn, options.maxSize, _this.fileTypeConfig['img'], function (data) {
+                _this.resetScale(options.range, options.showEle);
                 _this.appendImage(data.result, options.fileSelectBtn, options.showEle, function (result) {
                     options.callback && options.callback(result)
                 })
-                options.zoom && _this.bindmousewheel(options.range, options.showEle)
+                options.zoom && _this.bindMouseWheel(options.range, options.showEle);
                 options.fileBtn.blur();
             })
         },
+        //重置比例
+        resetScale: function (range, showEle) {
+            range && range.val(1.0)
+            this.ToScale(showEle, 1.0)
+        },
+        //添加图片节点
         appendImage: function (result, fileSelectBtn, showEle, callback) {
             this.loadImage(result).then(image => {
                 fileSelectBtn && fileSelectBtn.addClass("success-linear");
@@ -189,23 +198,27 @@
                 throw new Error(e);
             })
         },
-        bindmousewheel: function (range, showEle) {
+        //绑定鼠标滚轮事件
+        bindMouseWheel: function (rangeEle, showEle) {
             var _this = this
-            var scale = _this.scale
+            var scale = _this.scale,
+                maxScale = _this.maxScale,
+                range = _this.range
+
             //取整 parseInt ||  >>0  ||  ~~ 都可以
             showEle.get(0).onmousewheel = function (e) {
                 var target,
                     ee = e || window.event;
                 target = ee.delta ? ee.delta : ee.wheelDelta;    //火狐有特殊
                 if (target > 0) {
-                    scale += 0.05;
-                    scale = Math.min(scale, 3.0);
-                    range && range.val(scale);
+                    scale += range;
+                    scale = Math.min(scale, maxScale);
+                    rangeEle && rangeEle.val(scale);
                     _this.ToScale(showEle, scale)
                 } else if (target < 0) {
-                    scale -= 0.05;
+                    scale -= range;
                     scale = Math.max(0, scale);
-                    range && range.val(scale);
+                    rangeEle && rangeEle.val(scale);
                     _this.ToScale(showEle, scale)
                 } else {
                     return false;
@@ -244,8 +257,8 @@
                 //jpeg png gif    like  "/images/jpeg"     i对大小写不敏感
                 if (fileType == _this.fileTypeConfig['img']) {
                     var reg = /\/(?:jpeg|jpg|png|gif)/i;          //图片
-                    // var type = file.type.split("/").pop();
-                    var type = file.type.match(/image\/(\w*)/)[1];    //获取文件的类型
+                    var type = file.type.split("/").pop();
+                    // var type = file.type.match(/image\/(\w*)/)[1];    //获取文件的类型
                     if (!reg.test(file.type)) {
                         _this.notice("不支持" + type + "格式的" + fileType + "哟");
                         return;
@@ -314,19 +327,20 @@
                 return;
             }
             var _this = this;
-            var scale = _this.scale
-            options.range.on("mousemove touchmove", function (e) {
+            var isPc = this.isPc();
+            var scale = _this.scale;
+            options.range.on(isPc ? "mousemove " : "touchmove", function (e) {
                 var _this_ = $(this);
                 scale = Number(_this_.val());
-                options.range && options.range.val(scale)
+                options.range && options.range.val(scale);
                 _this.ToScale(options.ele, scale);
-            }).prev().on("click touchstart", function () {
+            }).prev().on(isPc ? "mouseover " : "touchstart", function () {
                 scale -= 0.01;
-                options.range && options.range.val(scale)
+                options.range && options.range.val(scale);
                 _this.ToScale(options.ele, scale)
-            }).next().next().on("click touchstart", function () {
+            }).next().next().on(isPc ? "mouseover" : "touchstart", function () {
                 scale += 0.01;
-                options.range && options.range.val(scale)
+                options.range && options.range.val(scale);
                 _this.ToScale(options.ele, scale)
             });
         },
@@ -361,7 +375,7 @@
         clipImage: function (options) {
             var _this = this;
             if (typeof options != "object") {
-                return
+                return;
             }
             var defaults = {
                 uploadBtn: $(".upload-upload-btn"),
@@ -370,7 +384,7 @@
                 range: $("#range")
             };
             var options = $.extend(defaults, options);
-            _this.canvas = document.createElement("canvas")
+            _this.canvas = document.createElement("canvas");
             //选择图片
 
             options.uploadBtn.on("click", function () {
@@ -419,10 +433,11 @@
                 maxSize: 1024,
                 drag: true,
                 zoom: true,
+                dragAreaActiveClassName: "dragActive",
                 success: function () { },
                 error: function () { }
             }
-            var options = $.extend(defaults, options)
+            var options = $.extend(defaults, options);
             this.moveImage({
                 ele: options.showEle
             })
@@ -453,7 +468,47 @@
                 fileBtn: options.fileBtn,
                 dragArea: options.dragArea,
                 fileArea: options.showEle,
-                maxSize: options.maxSize
+                maxSize: options.maxSize,
+                range: options.range,
+                dragAreaActiveClassName: options.dragAreaActiveClassName
+            })
+        },
+        //上传文件
+        uploadFile: function (fileUploadBtn, form, url, attr, progressCallback, errCallback, successCallback) {
+            var xhr = new XMLHttpRequest();
+            fileUploadBtn.on('click', function () {
+                var formData = form ? new FormData(form[0]) : new FormData();
+                if (attr) {
+                    var key = Object.keys(attr)[0];
+                    !form && attr && formData.append(Object.keys(attr)[0], attr[key]);
+                }
+
+                xhr.onloadstart = function () {
+                    console.log("load start");
+                }
+                xhr.onerror = function (e) {
+                    errCallback && errCallback(e)
+                }
+                xhr.onload = function () {
+                    var result = JSON.parse(xhr.responseText)
+                    successCallback && successCallback(result)
+                }
+                xhr.onabort = function (event) {
+                    _this.notice('传输中断!')
+                }
+                xhr.ontimeout = function () {
+                    _this.notice('连接超时!')
+                }
+                xhr.onloadend = function () {
+                    console.log('传输结束')
+                }
+                xhr.upload.onprogress = function (e) {
+                    var progress = Math.round(e.loaded * 100 / e.total)
+                    progressCallback && progressCallback(progress)
+                }
+
+                xhr.open('POST', url, true);
+                xhr.send(formData)
             })
         },
         //文件上传(带进度条)
@@ -461,65 +516,48 @@
             var defaults = {
                 maxSize: 1024,
                 onChange: function () { },
-                progress: function () { }
+                progress: function () { },
+                error: function () { },
+                success: function () { }
             }
-            var options = $.extend(defaults, options)
-            var _this = this
-            if (!options.url) throw new Error('No upload address specified')
-            var xhr = new XMLHttpRequest()
-            _this.selectImg({
-                fileBtn: options.fileBtn,
-                fileSelectBtn: options.fileSelectBtn,
-                fileUploadBtn: options.fileUploadBtn
-            })
-            //获取到文件时
-            _this.getFileInfo(options.fileBtn, options.maxSize, _this.fileTypeConfig['file'], function (result) {
-                options.onChange(result)
-                options.fileUploadBtn.on('click', function () {
-                    var formData = new FormData(options.form[0])
-                    xhr.onloadstart = function () {
-                        console.log("load start");
-                    }
-                    xhr.onerror = function (e) {
-                        options.error && options.error(e)
-                    }
-                    xhr.onload = function () {
-                        var result = JSON.parse(xhr.responseText)
-                        options.success && options.success(result)
-                        console.log("上传成功")
-                    }
-                    xhr.onabort = function (event) {
-                        _this.notice('传输中断!')
-                    }
-                    xhr.ontimeout = function () {
-                        _this.notice('连接超时!')
-                    }
-                    xhr.onloadend = function () {
-                        console.log('传输结束')
-                    }
-                    xhr.upload.onprogress = function (e) {
-                        var progress = Math.round(e.loaded * 100 / e.total)
-                        options.progress && options.progress(progress)
-                    }
+            var options = $.extend(defaults, options);
+            var _this = this;
+            if (!options.url) throw new Error('No upload address specified');
+            //绑定事件
+            _this.selectImg(options);
 
-                    xhr.open('POST', options.url, true)
-                    xhr.send(formData)
-                })
+            // 获取到文件时
+            _this.getFileInfo(options.fileBtn, options.maxSize, _this.fileTypeConfig['file'], function (result) {
+                options.onChange && options.onChange(result);
+                _this.uploadFile(
+                    options.fileUploadBtn,
+                    options.form,
+                    options.url,
+                    undefined,
+                    options.progress,
+                    options.error,
+                    options.success
+                )
             })
+            options.drag === true && options.dragArea && _this.addListener(
+                $.extend(options, { type: _this.fileTypeConfig['file'] })
+            )
         },
-        addDrapAreaStyle: function (ele, className) {
-            ele.addClass(className || 'drapActive')
+        addDragAreaStyle: function (ele, className) {
+            ele.addClass(className || 'dragActive')
         },
-        removeDrapAreaStyle: function (ele, className) {
-            ele.removeClass(className || 'drapActive')
+        removeDragAreaStyle: function (ele, className) {
+            ele.removeClass(className || 'dragActive')
         },
         stopAll: function (e) {
-            e.preventDefault && e.preventDefault() || e.originalEvent.preventDefault()
-            e.stopPropagation && e.stopPropagation() || e.originalEvent.stopPropagation()
+            e.preventDefault();
+            e.stopPropagation();
+            // e.preventDefault && e.preventDefault() || e.originalEvent.preventDefault()
+            // e.stopPropagation && e.stopPropagation() || e.originalEvent.stopPropagation()
         },
         /**
          * 绑定拖拽事件 (文件|图片拖拽选择)
-         * @param drapArea 拖拽文件相应区域 
+         * @param dragArea 拖拽文件相应区域 
          * @param fileArea 文件放置区域 
          * @param fileBtn 文件按钮 
          * @param zoom 缩放  默认 true 
@@ -528,50 +566,67 @@
         addListener: function (options) {
             var defaults = {
                 zoom: true,
-                type: this.fileTypeConfig['img']
+                type: this.fileTypeConfig['img'],
+                dragAreaActiveClassName: "dragActive"
             }
 
-            var options = $.extend(defaults, options)
-            var $dragArea = options.dragArea
+            var options = $.extend(defaults, options);
+            var $dragArea = options.dragArea;
+            var dragAreaClassName = options.dragAreaActiveClassName;
 
-            var _this = this
+            var dragArea = $dragArea.get(0);
+
+            var _this = this;
 
             document.addEventListener('dragenter', function (e) {
-                _this.addDrapAreaStyle($dragArea)
-            },false)
+                _this.addDragAreaStyle($dragArea, dragAreaClassName)
+
+            }, false)
             document.addEventListener('dragleave', function () {
-                _this.removeDrapAreaStyle($dragArea)
-            },false)
+                _this.removeDragAreaStyle($dragArea, dragAreaClassName)
+            }, false)
             //进入
-            $dragArea.on('dragenter', function (e) {
-                console.log(1);
-                _this.stopAll(e)
-                _this.addDrapAreaStyle($dragArea)
-            })
+            dragArea.addEventListener('dragenter', function (e) {
+                _this.stopAll(e);
+                _this.addDragAreaStyle($dragArea, dragAreaClassName)
+            }, false)
             //离开
-            $dragArea.on('dragleave', function (e) {
-                console.log(2);
-                _this.stopAll(e)
-                _this.removeDrapAreaStyle($dragArea)
-            })
+            dragArea.addEventListener('dragleave', function (e) {
+                _this.stopAll(e);
+                _this.removeDragAreaStyle($dragArea, dragAreaClassName)
+            }, false)
             //移动
-            $dragArea.on('dragover', function (e) {
-                console.log(22222);
-                console.log(e);
-                _this.stopAll(e)
-                    (e.dataTransfer || e.originalEvent.dataTransfer).dropEffect = 'copy'        //设置文件放置类型为拷贝
-            })
+            dragArea.addEventListener('dragover', function (e) {
+                (e.dataTransfer || e.originalEvent.dataTransfer).dropEffect = 'copy'  ;      //设置文件放置类型为拷
+                _this.stopAll(e);
+                _this.addDragAreaStyle($dragArea, dragAreaClassName);
+            }, false)
 
             //放下
-            $dragArea.on('drop', function (e) {
-                console.log(_this.isPc());
-                _this.stopAll(e)
-                var files = (e.dataTransfer || e.originalEvent.dataTransfer).files
+            dragArea.addEventListener('drop', function (e) {
+                _this.stopAll(e);
+                _this.removeDragAreaStyle($dragArea);
+                var files = (e.dataTransfer || e.originalEvent.dataTransfer).files;
                 _this.filterFileInfo(Array.from(files), options.type, options.maxSize, function (data) {
-                    options.type == optionsthis.fileTypeConfig['img'] && _this.appendImage(data.result, options.fileSelectBtn, options.fileArea)
-                    options.zoom === true && _this.bindmousewheel(options.range, options.fileArea)
+                    if (options.type == _this.fileTypeConfig['img']) {
+                        _this.resetScale(options.range, options.fileArea);
+                        _this.appendImage(data.result, options.fileSelectBtn, options.fileArea);
+                        options.zoom === true && _this.bindMouseWheel(options.range, options.fileArea);
+                    } else {
+                        options.onChange && options.onChange(data);
+                        _this.uploadFile(
+                            options.fileUploadBtn,
+                            undefined,
+                            options.url,
+                            { [options.fileBtn.attr("name")]: files[0] },
+                            options.progress,
+                            options.error,
+                            options.success
+                        )
+                    }
+
                 })
-            })
+            }, false)
         },
         fileTypeRegExp: function (fileType, reg) {
             let regExp = new RegExp('.*\/(?:' + fileType + ')$', 'i');
