@@ -1,15 +1,43 @@
  LjkUpLoad.js
 ====================
+
  jQuery（文件上传|头像裁剪上传）渣渣插件 ,支持拖拽上传,上传进度<br/>
- ---
  a jQuery Head cut upload & file upload plugin Support drag and drop upload and upload progress
 
 ***
 
-##### 如果你需要服务端的例子 请 `npm i` or `yarn`
-##### 然后 `npm run server`  or  `npm start`
----
-##### If you need to look at the complete example, please run  `npm i` or `yarn` then  run `npm run server` or `npm start`
+##### 如果你需要一个完整的例子 包括后端 请：
+```
+npm install
+```
+或者
+```
+yarn
+```
+然后
+```
+npm start
+```
+
+
+##### Example : If you need to look at the complete example, please run :
+
+```
+npm install
+```
+or
+```
+yarn
+```
+Then
+```
+npm start
+```
+
+open
+```
+localhost:6661
+```
 
 #### 然后访问
 ---
@@ -92,6 +120,7 @@
 
 
 >> 如果你只需要图片预览  请使用 `showImage()`    请参考 `examples/show_images_example.html`
+>> if you only need Preview picture
 >>>
 ```javascript
    var ljkUpload = new LjkUpload($(".root"));
@@ -111,6 +140,7 @@
 ***
 
 >> 如果你需要弹窗提示 使用  `notice()`  请参考 `examples/notice_example.html`
+>> If you need a notice 
 >>>   
 ```javascript
     /**
@@ -128,6 +158,7 @@
 ***
 
 >> 如果你需要加载动画 使用  `loading()` 
+>> If you need a loading prompt
 >>>   
 ```javascript
     /**
