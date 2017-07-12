@@ -6,16 +6,14 @@
 
 ***
 
-#####如果你需要服务端的例子 请 `npm i` or `yarn`
+##### 如果你需要服务端的例子 请 `npm i` or `yarn`
 ##### 然后 `npm run server`  or  `npm start`
 ---
 ##### If you need to look at the complete example, please run  `npm i` or `yarn` then  run `npm run server` or `npm start`
 
-#### 
-
-# 然后访问
+#### 然后访问
 ---
-# open
+##### open
 >
 >  1.图片裁剪上传(head cut upload example) http://localhost:1996/examples/clip_upload_example.html <br/>
 >  2.文件裁剪上传(file upload example) http://localhost:1996/examples/file_upload_example.html
