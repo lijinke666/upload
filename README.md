@@ -1,10 +1,8 @@
- LjkUpLoad.js
-====================
-
- jQuery（文件上传|头像裁剪上传）渣渣插件 ,支持拖拽上传,上传进度<br/>
- a jQuery Head cut upload & file upload plugin Support drag and drop upload and upload progress
-
-***
+ # LjkUpLoad.js
+ 
+ #### jQuery（文件上传|头像裁剪上传）渣渣插件 ,支持拖拽上传,上传进度<br/>
+ #### a jQuery Head cut upload & file upload plugin Support drag and drop upload and upload progress
+--
 
 ##### 如果你需要一个完整的例子 包括后端 请：
 ##### Example : If you need to look at the complete example, please run :
@@ -25,18 +23,21 @@ open your bower
 localhost:1996
 ```
 
+##### 预览 preview
+
+![example](https://github.com/lijinke666/LjkUpLoad/blob/master/ljkUpload.gif)
+
 #### 然后访问 (Then open)
----
+
 ##### open
 >
 >  1.图片裁剪上传(head cut upload example) http://localhost:1996/examples/clip_upload_example.html <br/>
 >  2.文件裁剪上传(file upload example) http://localhost:1996/examples/file_upload_example.html
   
----
+  
 #### 垃圾源码中我写了很多注释,大家一起学习进步 :) 。。逃(
----
 #### I hope you can study and make progress together
----
+
 
 #### How to Use ?
 
@@ -48,7 +49,7 @@ localhost:1996
 ## 客户端
 ## Client Examples
 
-*********************************
+
 > Examples
 >> (例子 1)  `clipUpload()`  图片裁剪上传   请参考 `examples/clip_upload_example.html`
 >> (example 1) `clipUpload()` head cut upload , please reference `examples/clip_upload_example.html`
@@ -78,7 +79,6 @@ localhost:1996
     
 ```
 
-***
 
 >> (例子 2)  `fileUpload()`  文件上传（带进度条功能）  请参考 `examples/file_upload_example.html`
 >> (example 2) `fileUpload()` file upload( support progress) , please reference `examples/file_upload_example.html`
@@ -111,7 +111,6 @@ localhost:1996
      
 ```
 
-***
 
 
 >> 如果你只需要图片预览  请使用 `showImage()`    请参考 `examples/show_images_example.html`
@@ -158,9 +157,7 @@ localhost:1996
     });
 ```
 
-***
 
-***
 
 >> 如果你需要加载动画 使用  `loading()` 
 >> If you need a loading prompt
@@ -173,7 +170,6 @@ localhost:1996
     ljkupload.removeLoading()    //移除加载动画
 ```
 
-***
     
 #### 服务端
 server.js
