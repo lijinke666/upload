@@ -23,7 +23,6 @@ npm start
 open your bower
 ```
 localhost:1996
-
 ```
 
 #### 然后访问 (Then open)
