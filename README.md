@@ -41,6 +41,11 @@ localhost:1996
 
 #### How to Use ?
 
+```javascript
+<link rel="stylesheet" href="../libs/ljkUpload.min.css">
+<script src="../libs/ljkUpload.min.js"></script>
+```
+
 ## 客户端
 ## Client Examples
 
@@ -136,12 +141,23 @@ localhost:1996
 ```javascript
     /**
         *
-        * @param {String} msg             提示信息
-        * @param {Number} showTime        显示时间
+        * @param {String} msg             提示信息    
+        * @param {Number} showTime        显示时间    [default] 1500 ms
         * @param {Function} onHideHandler   回调函数
-        * @param {String} title            标题
+        * @param {String} title            标题   [default] '提示'
         */
     ljkUpload.notice(msg,showTime,onHideHandler,title)
+```
+
+#### 默认函数内部消息提示 使用 `notice()` 如果你需要自定义 可以在实例化的时候配置
+#### Default function internal message prompt use `notice()` If you need to customize it 
+##### 以 `layer` 弹窗库 为例
+##### Take `layer` as an example
+```javascript
+    var ljkUpload = new LjkUpload($(".root"),{
+        successNotice:layer.msg,
+        errorNotice:layer.alert
+    });
 ```
 
 ***

@@ -1,6 +1,7 @@
 {
   "author": "Jinke.Li",
   "license": "MIT",
+  "main": "libs/ljkUpload.min.js",
   "description": "Jquery (fileUpload & imgClipUpload) Plugin ",
   "name": "LjkUpload.js",
   "version": "0.6.0",
@@ -25,7 +26,8 @@
   ],
   "scripts": {
     "start": "node server",
-    "cssMin": "gulp cssMin"
+    "cssMin": "gulp cssMin",
+    "jsMin": "gulp jsMin"
   },
   "devDependencies": {
     "body-parser": "^1.16.1",

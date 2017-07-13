@@ -4,10 +4,10 @@ const gulp = require('gulp'),
     concat = require('gulp-concat'),
     rename = require('gulp-rename'),
     rev = require('gulp-rev-append'),
-    jsmin = require('gulp-uglify');
+    uglify = require('gulp-uglify');
 
 gulp.task('cssMin',function(){
-    gulp.src('examples/libs/*.css')
+    gulp.src('./libs/ljkUpload.css')
         .pipe(rev())
         .pipe(auto({
             browsers: ['last 2 versions', 'Android >= 4.0'],
@@ -21,6 +21,14 @@ gulp.task('cssMin',function(){
             keepSpecialComments: '*'//保留所有特殊前缀 当你用autoprefixer生成的浏览器前缀，如果不加这个参数，有可能将会删除你的部分前缀
         }))
         .pipe(rename({suffix:'.min'}))   //rename压缩后的文件名
-        .pipe(gulp.dest('examples/libs'))
+        .pipe(gulp.dest('./libs'))
+})
+
+
+gulp.task('jsMin',function(){
+    gulp.src('./libs/ljkUpload.js')
+        .pipe(uglify())
+        .pipe(rename({suffix:'.min'}))
+        .pipe(gulp.dest('./libs'))
 })
 

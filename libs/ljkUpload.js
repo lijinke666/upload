@@ -3,12 +3,26 @@
  * By: 李金珂小朋友
  * 图片裁剪 & 文件上传 小插件,
  * 支持拖拽上传,上传进度
- * v 0.5.0
+ * v 0.6.0
  *  ：）
  */
-(function ($) {
-    var LjkUpload = function (element) {
-        this.element = element;
+(function (win, $) {
+    /**
+     * 
+     * @param {Object} root  入口容器
+     * @param {Object} message 自定义消息提示 
+     * message.success
+     * message.error
+     */
+    var LjkUpload = function (root, message) {
+        this.element = root;
+        var defaultsMessage = {
+            successNotice:this.notice,
+            errorNotice:this.notice
+        };
+        this.message = $.extend(defaultsMessage,message);
+        this.successNotice = this.message.successNotice;
+        this.errorNotice = this.message.errorNotice;
     };
     LjkUpload.prototype = {
         files: null,
@@ -20,8 +34,8 @@
             "file": "文件"
         },
         //是否为PC   返回 true 或 false
-        isPc: function () {
-            var userAgent = navigator.userAgent;
+        isPc: (function (nav) {
+            var userAgent = nav.userAgent;
             var AgentsArray = ["Android", "iPhone", "SymbianOS", "Windows Phone", "iPad", "iPod"];
             var flag = true;
             for (var i = 0; i < AgentsArray.length; i++) {
@@ -31,7 +45,7 @@
                 }
             }
             return flag;
-        },
+        })(navigator),
 
         /**
          *
@@ -85,7 +99,7 @@
 
         selectImg: function (options) {
             if (typeof options != "object") {
-                return
+                return;
             }
             options.fileSelectBtn
                 ? options.fileSelectBtn.on("click", function () {
@@ -97,11 +111,9 @@
 
         getBoundingClientRect: function (ele) {
             const gbc = ele.getBoundingClientRect();
-            const left = gbc.left;
-            const top = gbc.top;
             return {
-                left,
-                top
+                left: gbc.left,
+                top: gbc.top
             }
         },
 
@@ -114,7 +126,7 @@
             if (typeof options != "object") {
                 return
             }
-            var isPc = this.isPc();
+            var isPc = this.isPc;
             var mouseOffsetX = 0,
                 mouseOffsetY = 0,
                 isDown = false;
@@ -177,33 +189,33 @@
             _this.getFileInfo(options.fileBtn, options.maxSize, _this.fileTypeConfig['img'], function (data) {
                 _this.resetScale(options.range, options.showEle);
                 _this.appendImage(data.result, options.fileSelectBtn, options.showEle, function (result) {
-                    options.callback && options.callback(result)
-                })
+                    options.callback && options.callback(result);
+                });
                 options.zoom && _this.bindMouseWheel(options.range, options.showEle);
                 options.fileBtn.blur();
             })
         },
         //重置比例
         resetScale: function (range, showEle) {
-            range && range.val(1.0)
-            this.ToScale(showEle, 1.0)
+            range && range.val(1.0);
+            this.ToScale(showEle, 1.0);
         },
         //添加图片节点
         appendImage: function (result, fileSelectBtn, showEle, callback) {
             this.loadImage(result).then(image => {
                 fileSelectBtn && fileSelectBtn.addClass("success-linear");
                 showEle.html('').append(image).removeClass("hasImg");
-                callback && callback(result)
+                callback && callback(result);
             }).catch(e => {
                 throw new Error(e);
             })
         },
         //绑定鼠标滚轮事件
         bindMouseWheel: function (rangeEle, showEle) {
-            var _this = this
+            var _this = this;
             var scale = _this.scale,
                 maxScale = _this.maxScale,
-                range = _this.range
+                range = _this.range;
 
             //取整 parseInt ||  >>0  ||  ~~ 都可以
             showEle.get(0).onmousewheel = function (e) {
@@ -214,43 +226,43 @@
                     scale += range;
                     scale = Math.min(scale, maxScale);
                     rangeEle && rangeEle.val(scale);
-                    _this.ToScale(showEle, scale)
+                    _this.ToScale(showEle, scale);
                 } else if (target < 0) {
                     scale -= range;
                     scale = Math.max(0, scale);
                     rangeEle && rangeEle.val(scale);
-                    _this.ToScale(showEle, scale)
+                    _this.ToScale(showEle, scale);
                 } else {
                     return false;
                 }
             };
         },
         getFileInfo: function (fileBtn, maxSize, fileType, callback) {
-            var _this = this
-            fileType = fileType || _this.fileTypeConfig['file']
+            var _this = this;
+            fileType = fileType || _this.fileTypeConfig['file'];
             fileBtn.on('change', function () {
                 if (!window.FileReader) {
-                    _this.notice("浏览器版本过低");
+                    _this.errorNotice("浏览器版本过低");
                     return;
-                }
+                };
                 //将对象转换为数组 Array.prototype.slice.call(obj);
                 //对象没有slice方法 所以通过Array的原型上的slice 通过call改变this指针
                 //ES6中可以写成  Array.from(obj);
                 _this.files = Array.prototype.slice.call(this.files);
 
                 _this.filterFileInfo(_this.files, fileType, maxSize, function (data) {
-                    callback(data)
+                    callback(data);
                 })
             })
 
         },
         //过滤文件信息
         filterFileInfo: function (fileList, fileType, maxSize, callback) {
-            var _this = this
+            var _this = this;
             if (fileList.length && fileList.length > 1) {
                 fileType == _this.fileTypeConfig['img']
-                    ? _this.notice("只能上传1张图片:)")
-                    : _this.notice("只能上传1个文件:)")
+                    ? _this.errorNotice("只能上传1张图片:)")
+                    : _this.errorNotice("只能上传1个文件:)");
                 return;
             }
             fileList.forEach(function (file, i) {
@@ -260,14 +272,14 @@
                     var type = file.type.split("/").pop();
                     // var type = file.type.match(/image\/(\w*)/)[1];    //获取文件的类型
                     if (!reg.test(file.type)) {
-                        _this.notice("不支持" + type + "格式的" + fileType + "哟");
+                        _this.errorNotice("不支持" + type + "格式的" + fileType + "哟");
                         return;
                     }
                 }
                 if (maxSize != 'undefined' && typeof maxSize == 'number') {
                     var fileSize = file.size / 1024;
                     if (fileSize > maxSize) {
-                        _this.notice("抱歉," + fileType + " 最大为 " + maxSize + " KB");
+                        _this.errorNotice("抱歉," + fileType + " 最大为 " + maxSize + " KB");
                         return;
                     }
                 }
@@ -281,12 +293,12 @@
                 //读取失败
                 reader.onerror = function () {
                     _this.removeLoading();
-                    _this.notice("读取失败");
+                    _this.errorNotice("读取失败");
                 };
                 //读取中断
                 reader.onabort = function () {
                     _this.removeLoading();
-                    _this.notice("网络异常!");
+                    _this.errorNotice("网络异常!");
                 };
                 //读取成功
                 reader.onload = function () {
@@ -307,10 +319,10 @@
                 let img = new Image();
                 img.src = src;
                 img.onload = () => {
-                    res(img)
-                }
+                    res(img);
+                };
                 img.onerror = (e) => {
-                    rej(e)
+                    rej(e);
                 }
             })
         },
@@ -327,7 +339,7 @@
                 return;
             }
             var _this = this;
-            var isPc = this.isPc();
+            var isPc = this.isPc;
             var scale = _this.scale;
             options.range.on(isPc ? "mousemove " : "touchmove", function (e) {
                 var _this_ = $(this);
@@ -341,7 +353,7 @@
             }).next().next().on(isPc ? "mouseover" : "touchstart", function () {
                 scale += 0.01;
                 options.range && options.range.val(scale);
-                _this.ToScale(options.ele, scale)
+                _this.ToScale(options.ele, scale);
             });
         },
 
@@ -376,7 +388,7 @@
             var _this = this;
             if (typeof options != "object") {
                 return;
-            }
+            };
             var defaults = {
                 uploadBtn: $(".upload-upload-btn"),
                 uploadImageBox: $(".move-image"),
@@ -390,7 +402,7 @@
             options.uploadBtn.on("click", function () {
                 try {
                     if (options.uploadImageBox.hasClass("hasImg")) {
-                        _this.notice("请选择图片");
+                        _this.errorNotice("请选择图片");
                         return;
                     }
                     var $img = options.uploadImageBox.find("img"),
@@ -414,13 +426,13 @@
                     // dHeight 绘制图片的画布高度
                     cxt.drawImage($img.get(0), sx / scale, sy / scale, $width / scale, $height / scale, 0, 0, $width, $height);
 
-                    var imageType = (options.quality && typeof (options.quality) === 'number') ? 'image/jpeg' : 'image/png'
+                    var imageType = (options.quality && typeof (options.quality) === 'number') ? 'image/jpeg' : 'image/png';
                     //toDataURL  param1 文件类型 param2 质量  当第二参数为正时 param1 只能是 jpeg|webp
                     var Src = _this.canvas.toDataURL(imageType, Number(options.quality));
                     delete this.canvas;
                     if (typeof options.clipSuccess != "function") {
                         throw new Error("请使用clipSuccess回调函数:(");
-                    }
+                    };
                     options.clipSuccess(Src);
                 } catch (e) {
                     options.clipError('error:' + e);
@@ -436,11 +448,11 @@
                 dragAreaActiveClassName: "dragActive",
                 success: function () { },
                 error: function () { }
-            }
+            };
             var options = $.extend(defaults, options);
             this.moveImage({
                 ele: options.showEle
-            })
+            });
             this.showImage({
                 range: options.range,
                 fileSelectBtn: options.fileSelectBtn,
@@ -448,21 +460,21 @@
                 showEle: options.showEle,
                 maxSize: options.maxSize,
                 zoom: options.zoom
-            })
+            });
             this.rangeToScale({
                 range: options.range,
                 ele: options.showEle
-            })
+            });
             this.clipImage({
                 range: options.range,
                 quality: options.quality,
                 clipSuccess: function (Src) {
-                    options.success(Src)
+                    options.success(Src);
                 },
                 clipError: function (e) {
-                    options.error(e)
+                    options.error(e);
                 }
-            })
+            });
             options.drag === true && options.dragArea && this.addListener({
                 type: this.fileTypeConfig['img'],
                 fileBtn: options.fileBtn,
@@ -485,31 +497,31 @@
 
                 xhr.onloadstart = function () {
                     console.log("load start");
-                }
+                };
                 xhr.onerror = function (e) {
-                    errCallback && errCallback(e)
-                }
+                    errCallback && errCallback(e);
+                };
                 xhr.onload = function () {
-                    var result = JSON.parse(xhr.responseText)
-                    successCallback && successCallback(result)
-                }
+                    var result = JSON.parse(xhr.responseText);
+                    successCallback && successCallback(result);
+                };
                 xhr.onabort = function (event) {
-                    _this.notice('传输中断!')
-                }
+                    _this.errorNotice('传输中断!');
+                };
                 xhr.ontimeout = function () {
-                    _this.notice('连接超时!')
-                }
+                    _this.errorNotice('连接超时!');
+                };
                 xhr.onloadend = function () {
-                    console.log('传输结束')
-                }
+                    console.log('传输结束');
+                };
                 xhr.upload.onprogress = function (e) {
-                    var progress = Math.round(e.loaded * 100 / e.total)
-                    progressCallback && progressCallback(progress)
-                }
+                    var progress = Math.round(e.loaded * 100 / e.total);
+                    progressCallback && progressCallback(progress);
+                };
 
                 xhr.open('POST', url, true);
-                xhr.send(formData)
-            })
+                xhr.send(formData);
+            });
         },
         //文件上传(带进度条)
         fileUpload: function (options) {
@@ -519,7 +531,7 @@
                 progress: function () { },
                 error: function () { },
                 success: function () { }
-            }
+            };
             var options = $.extend(defaults, options);
             var _this = this;
             if (!options.url) throw new Error('No upload address specified');
@@ -537,17 +549,17 @@
                     options.progress,
                     options.error,
                     options.success
-                )
-            })
+                );
+            });
             options.drag === true && options.dragArea && _this.addListener(
                 $.extend(options, { type: _this.fileTypeConfig['file'] })
-            )
+            );
         },
         addDragAreaStyle: function (ele, className) {
-            ele.addClass(className || 'dragActive')
+            ele.addClass(className || 'dragActive');
         },
         removeDragAreaStyle: function (ele, className) {
-            ele.removeClass(className || 'dragActive')
+            ele.removeClass(className || 'dragActive');
         },
         stopAll: function (e) {
             e.preventDefault();
@@ -568,7 +580,7 @@
                 zoom: true,
                 type: this.fileTypeConfig['img'],
                 dragAreaActiveClassName: "dragActive"
-            }
+            };
 
             var options = $.extend(defaults, options);
             var $dragArea = options.dragArea;
@@ -579,28 +591,28 @@
             var _this = this;
 
             document.addEventListener('dragenter', function (e) {
-                _this.addDragAreaStyle($dragArea, dragAreaClassName)
+                _this.addDragAreaStyle($dragArea, dragAreaClassName);
 
-            }, false)
+            }, false);
             document.addEventListener('dragleave', function () {
-                _this.removeDragAreaStyle($dragArea, dragAreaClassName)
-            }, false)
+                _this.removeDragAreaStyle($dragArea, dragAreaClassName);
+            }, false);
             //进入
             dragArea.addEventListener('dragenter', function (e) {
                 _this.stopAll(e);
-                _this.addDragAreaStyle($dragArea, dragAreaClassName)
-            }, false)
+                _this.addDragAreaStyle($dragArea, dragAreaClassName);
+            }, false);
             //离开
             dragArea.addEventListener('dragleave', function (e) {
                 _this.stopAll(e);
-                _this.removeDragAreaStyle($dragArea, dragAreaClassName)
-            }, false)
+                _this.removeDragAreaStyle($dragArea, dragAreaClassName);
+            }, false);
             //移动
             dragArea.addEventListener('dragover', function (e) {
-                (e.dataTransfer || e.originalEvent.dataTransfer).dropEffect = 'copy'  ;      //设置文件放置类型为拷
+                (e.dataTransfer || e.originalEvent.dataTransfer).dropEffect = 'copy';      //设置文件放置类型为拷
                 _this.stopAll(e);
                 _this.addDragAreaStyle($dragArea, dragAreaClassName);
-            }, false)
+            }, false);
 
             //放下
             dragArea.addEventListener('drop', function (e) {
@@ -613,12 +625,15 @@
                         _this.appendImage(data.result, options.fileSelectBtn, options.fileArea);
                         options.zoom === true && _this.bindMouseWheel(options.range, options.fileArea);
                     } else {
+                        var formData = {};
+                        formData[options.fileBtn.attr("name")] = files[0];
                         options.onChange && options.onChange(data);
                         _this.uploadFile(
                             options.fileUploadBtn,
                             undefined,
                             options.url,
-                            { [options.fileBtn.attr("name")]: files[0] },
+                            // { [options.fileBtn.attr("name")]: files[0] },
+                            formData,
                             options.progress,
                             options.error,
                             options.success
@@ -635,5 +650,5 @@
     };
     //自执行函数 不暴露成员
     //挂载在 window全局对象 不然访问不到
-    window['LjkUpload'] = LjkUpload;
-})(jQuery);
+    win['LjkUpload'] = LjkUpload;
+})(window, jQuery);

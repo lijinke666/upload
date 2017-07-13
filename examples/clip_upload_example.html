@@ -5,7 +5,7 @@
     <title>裁剪上传例子</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="format-detection" content="telephone=no"/>
-    <link rel="stylesheet" href="../libs/ljkUpload.css">
+    <link rel="stylesheet" href="../libs/ljkUpload.min.css">
 </head>
 <body>
 <div class="headImg-popup">
@@ -56,7 +56,7 @@
                     dataType:"json",
                     success:function(res){
                         if(res.success)
-                            ljkUpload.notice('上传成功')
+                            ljkUpload.notice('上传成功!')
                     }
                 })
             },
