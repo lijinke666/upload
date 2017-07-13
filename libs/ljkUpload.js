@@ -17,12 +17,10 @@
     var LjkUpload = function (root, message) {
         this.element = root;
         var defaultsMessage = {
-            successNotice:this.notice,
-            errorNotice:this.notice
+            notice:this.notice
         };
         this.message = $.extend(defaultsMessage,message);
-        this.successNotice = this.message.successNotice;
-        this.errorNotice = this.message.errorNotice;
+        this.errorNotice = this.message.notice;
     };
     LjkUpload.prototype = {
         files: null,

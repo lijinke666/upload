@@ -154,8 +154,7 @@ localhost:1996
 ##### Take `layer` as an example
 ```javascript
     var ljkUpload = new LjkUpload($(".root"),{
-        successNotice:layer.msg,
-        errorNotice:layer.alert
+        notice:layer.msg,
     });
 ```
 
