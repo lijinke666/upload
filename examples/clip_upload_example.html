@@ -6,8 +6,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="format-detection" content="telephone=no"/>
     <link rel="stylesheet" href="../libs/ljkUpload.min.css">
+    <style>
+       h2.title{
+           font-weight: 500;
+           color:#444;
+           margin-bottom: 30px;
+       }
+    </style>
 </head>
 <body>
+<h2 class="title">裁剪上传Demo,支持拖拽,粘贴</h2>
 <div class="headImg-popup">
     <div class="upload-image-box text-center color-white fz16rem">
         <!--拖动缩放区域-->
@@ -31,21 +39,22 @@
 </section>
 </body>
 <script src="../libs/jquery.min.js"></script>
-<script src="../libs/ljkUpload.min.js"></script>
+<script src="../libs/ljkUpload.js"></script>
 <script>
     $(function () {
         var ljkUpload = new LjkUpload($(".headImg-popup"));
 
         ljkUpload.clipUpload({
             fileBtn:$("input[type='file']"),          //file 文件按钮
-            fileSelectBtn:$(".upload-select-btn"),    //文件选择按钮
+            fileSelectBtn:$(".upload-select-btn"),    //美化后文件选择按钮   可不填
             uploadBtn:$(".upload-upload-btn"),        //文件上传按钮
             showEle:$(".move-image"),                 //图片移动区域            
             maxSize:1024,                        //文件大小限制   默认1M
             // quality:0.92,                              //图片压缩  0-1  可不选 默认 0.92
             range:$("#range"),                        //滑块
+            paste:true,                               //是否支持粘贴  默认 true
             drag:true,                                 //支持拖拽      默认true    
-            dragArea:$('.upload-image-box') ,          //响应拖拽的区域  
+            dragArea:$('.upload-image-box') ,          //如果设置drag 为 true 需要设置响应拖拽的区域  
             dragAreaActiveClassName:"dragActive",                  //自定义拖拽区域 active样式            
             success:function( image ){                //裁剪成功callback  返回base64图片
                 $('.showImage').append(`<li><img src="${image}"></li>`)

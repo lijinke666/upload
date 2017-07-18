@@ -1,8 +1,9 @@
 /**
  * Created by jinle.li on 2016/7/13.
  * By: 李金珂小朋友
+ * Github: https://github.com/lijinke666
  * 图片裁剪 & 文件上传 小插件,
- * 支持拖拽上传,上传进度
+ * 支持拖拽,粘贴,上传进度
  * v 0.6.0
  *  ：）
  */
@@ -17,9 +18,9 @@
     var LjkUpload = function (root, message) {
         this.element = root;
         var defaultsMessage = {
-            notice:this.notice
+            notice: this.notice
         };
-        this.message = $.extend(defaultsMessage,message);
+        this.message = $.extend(defaultsMessage, message);
         this.errorNotice = this.message.notice;
     };
     LjkUpload.prototype = {
@@ -27,6 +28,8 @@
         scale: 1.0,          //缩放比例
         maxScale: 3.0,        //最大缩放
         range: 0.05,          //每次缩放的量
+        fileSize: 0,           //多图上传 所有文件的大小
+        multipleNum: 0,         //多图上传 文件个数
         fileTypeConfig: {
             "img": "图片",
             "file": "文件"
@@ -46,7 +49,7 @@
         })(navigator),
 
         /**
-         *
+         * 加载提示
          * @param msg  loading动画 文字信息
          */
         loading: function (msg) {
@@ -62,7 +65,7 @@
         },
 
         /**
-         *
+         * 通知消息
          * @param msg             提示信息
          * @param onHideHandler   回调函数
          * @param title            标题
@@ -94,7 +97,7 @@
         removeLoading: function () {
             $('.removeLoading').remove();
         },
-
+        //绑定选择事件
         selectImg: function (options) {
             if (typeof options != "object") {
                 return;
@@ -106,7 +109,7 @@
                 : options.fileBtn.click();
 
         },
-
+        //获取元素位置信息
         getBoundingClientRect: function (ele) {
             const gbc = ele.getBoundingClientRect();
             return {
@@ -115,9 +118,8 @@
             }
         },
 
-        //拖拽图片
         /**
-         *
+         *拖拽图片
          * @param ele      拖拽区域
          */
         moveImage: function (options) {
@@ -162,8 +164,8 @@
             });
         },
 
-        //展示图片
         /**
+         * 展示图片
          * @param fileSelectBtn     文件美化后的选择按钮 可不选
          * @param fileBtn     文件按钮
          * @param showEle     图片显示区域
@@ -184,7 +186,7 @@
             _this.selectImg(options);
             //获取到文件时
 
-            _this.getFileInfo(options.fileBtn, options.maxSize, _this.fileTypeConfig['img'], function (data) {
+            _this.getFileInfo(options.fileBtn, options.maxSize, _this.fileTypeConfig['img'], false, function (data) {
                 _this.resetScale(options.range, options.showEle);
                 _this.appendImage(data.result, options.fileSelectBtn, options.showEle, function (result) {
                     options.callback && options.callback(result);
@@ -235,7 +237,8 @@
                 }
             };
         },
-        getFileInfo: function (fileBtn, maxSize, fileType, callback) {
+        //拿到文件信息
+        getFileInfo: function (fileBtn, maxSize, fileType, multiple, callback) {
             var _this = this;
             fileType = fileType || _this.fileTypeConfig['file'];
             fileBtn.on('change', function () {
@@ -248,70 +251,82 @@
                 //ES6中可以写成  Array.from(obj);
                 _this.files = Array.prototype.slice.call(this.files);
 
-                _this.filterFileInfo(_this.files, fileType, maxSize, function (data) {
+                _this.filterFileInfo(_this.files, fileType, maxSize, multiple, function (data) {
                     callback(data);
                 })
             })
 
         },
         //过滤文件信息
-        filterFileInfo: function (fileList, fileType, maxSize, callback) {
+        filterFileInfo: function (fileList, fileType, maxSize, multiple, callback) {
             var _this = this;
-            if (fileList.length && fileList.length > 1) {
-                fileType == _this.fileTypeConfig['img']
-                    ? _this.errorNotice("只能上传1张图片:)")
-                    : _this.errorNotice("只能上传1个文件:)");
-                return;
+            multiple = multiple || false
+            if (!multiple) {
+                if (fileList.length && fileList.length > 1) {
+                    fileType == _this.fileTypeConfig['img']
+                        ? _this.errorNotice("只能上传1张图片:)")
+                        : _this.errorNotice("只能上传1个文件:)");
+                    return;
+                }
             }
             fileList.forEach(function (file, i) {
                 //jpeg png gif    like  "/images/jpeg"     i对大小写不敏感
-                if (fileType == _this.fileTypeConfig['img']) {
-                    var reg = /\/(?:jpeg|jpg|png|gif)/i;          //图片
-                    var type = file.type.split("/").pop();
-                    // var type = file.type.match(/image\/(\w*)/)[1];    //获取文件的类型
-                    if (!reg.test(file.type)) {
-                        _this.errorNotice("不支持" + type + "格式的" + fileType + "哟");
-                        return;
-                    }
-                }
-                if (maxSize != 'undefined' && typeof maxSize == 'number') {
-                    var fileSize = file.size / 1024;
-                    if (fileSize > maxSize) {
-                        _this.errorNotice("抱歉," + fileType + " 最大为 " + maxSize + " KB");
-                        return;
-                    }
-                }
-                //HTML 5.1  新增file接口
-                var reader = new FileReader();
-
-                //读取中
-                reader.onprogress = function () {
-                    _this.loading("读取中,请稍后");
-                };
-                //读取失败
-                reader.onerror = function () {
-                    _this.removeLoading();
-                    _this.errorNotice("读取失败");
-                };
-                //读取中断
-                reader.onabort = function () {
-                    _this.removeLoading();
-                    _this.errorNotice("网络异常!");
-                };
-                //读取成功
-                reader.onload = function () {
-                    _this.removeLoading();
-                    var result = this.result;        //读取失败时  null   否则就是读取的结果
-                    callback && callback({
-                        name: file.name,
-                        type: file.type,
-                        size: file.size,
-                        result: result
-                    })
-                };
-                reader.readAsDataURL(file);      //base64
+                _this.readerImage(fileType, file, maxSize, function (fileInfo) {
+                    callback(fileInfo)
+                })
             })
         },
+        //读取图片信息
+        readerImage: function (fileType, file, maxSize, callback) {
+            var _this = this
+            //jpeg jpg png gif    like  "/images/jpeg"     i对大小写不敏感
+            if (fileType == _this.fileTypeConfig['img']) {
+                var reg = /\/(?:jpeg|jpg|png|gif)/i;          //图片
+                var type = file.type.split("/").pop();
+                // var type = file.type.match(/image\/(\w*)/)[1];    //获取文件的类型
+                if (!reg.test(file.type)) {
+                    _this.errorNotice("不支持" + !!type ? type : '这种' + "格式的" + fileType + "哟");
+                    return;
+                }
+            }
+            if (maxSize != 'undefined' && typeof maxSize == 'number') {
+                var fileSize = file.size / 1024;
+                if (fileSize > maxSize) {
+                    _this.errorNotice("抱歉," + fileType + " 最大为 " + maxSize + " KB");
+                    return;
+                }
+            }
+            //HTML 5.1  新增file接口
+            var reader = new FileReader();
+
+            //读取中
+            reader.onprogress = function () {
+                _this.loading("读取中,请稍后");
+            };
+            //读取失败
+            reader.onerror = function () {
+                _this.removeLoading();
+                _this.errorNotice("读取失败");
+            };
+            //读取中断
+            reader.onabort = function () {
+                _this.removeLoading();
+                _this.errorNotice("网络异常!");
+            };
+            //读取成功
+            reader.onload = function () {
+                _this.removeLoading();
+                var result = this.result;        //读取失败时  null   否则就是读取的结果
+                callback && callback({
+                    name: file.name,
+                    type: file.type,
+                    size: file.size,
+                    result: result
+                })
+            };
+            reader.readAsDataURL(file);      //base64
+        },
+        //异步加载图片
         loadImage: function (src) {
             return new Promise((res, rej) => {
                 let img = new Image();
@@ -325,9 +340,8 @@
             })
         },
 
-        //滑块拖拽缩放
         /**
-         *
+         * 滑块拖拽缩放
          * @param range   滑块
          * @param scale   缩放比例
          * @param ele     什么区域进行缩放
@@ -355,9 +369,8 @@
             });
         },
 
-        //缩放
         /**
-         *
+         * 缩放
          * @param ele     什么区域进行缩放
          * @param scale   缩放比例
          */
@@ -370,10 +383,8 @@
                 "transform": "scale(" + scale + ")"
             })
         },
-
-        //裁剪
         /**
-         *
+         * 裁剪图片
          * @param uploadBtn  上传按钮
          * @param uploadImageBox  拖拽区域
          * @param clipImage  裁剪区域
@@ -443,10 +454,12 @@
                 maxSize: 1024,
                 drag: true,
                 zoom: true,
+                paste: true,
                 dragAreaActiveClassName: "dragActive",
                 success: function () { },
                 error: function () { }
             };
+            var _this = this
             var options = $.extend(defaults, options);
             this.moveImage({
                 ele: options.showEle
@@ -480,7 +493,35 @@
                 fileArea: options.showEle,
                 maxSize: options.maxSize,
                 range: options.range,
-                dragAreaActiveClassName: options.dragAreaActiveClassName
+                dragAreaActiveClassName: options.dragAreaActiveClassName,
+                callback: function (data) {
+                    _this.appendImage(data.result, options.fileSelectBtn, options.showEle);
+                }
+            })
+            options.paste === true && this.addPasteListener(function (file) {
+                _this.readerImage(_this.fileTypeConfig['img'], file, options.maxSize, function (data) {
+                    _this.appendImage(data.result, options.fileSelectBtn, options.showEle)
+                });
+            })
+
+        },
+        /**
+         * 添加粘贴事件
+         * @param {Function} callback 回调 
+         */
+        addPasteListener: function (callback) {
+            var _this = this;
+            $(document.body).on('paste', function (e) {
+                var clipboardData = window.clipboardData || e.originalEvent.clipboardData;
+                var items = clipboardData.items;         //文件
+                var types = clipboardData.types || [];   //文件类型
+                if (!items) return;
+
+                var item = items[0],
+                    kind = item.kind,
+                    type = item.type;     //kind 种类 type 格式 
+                if (kind.toLocaleLowerCase() != "file") return _this.errorNotice('文件类型不正确！');
+                callback && callback(item.getAsFile())
             })
         },
         //上传文件
@@ -537,7 +578,7 @@
             _this.selectImg(options);
 
             // 获取到文件时
-            _this.getFileInfo(options.fileBtn, options.maxSize, _this.fileTypeConfig['file'], function (result) {
+            _this.getFileInfo(options.fileBtn, options.maxSize, _this.fileTypeConfig['file'], false, function (result) {
                 options.onChange && options.onChange(result);
                 _this.uploadFile(
                     options.fileUploadBtn,
@@ -553,9 +594,107 @@
                 $.extend(options, { type: _this.fileTypeConfig['file'] })
             );
         },
+        //多图上传
+        multipleUpload: function (options) {
+            var defaults = {
+                maxSize: 1024,
+                drag: true,
+                paste: true,
+                multipleSection: $('.multiple-list'),
+                dragAreaActiveClassName: "multiple-area-active",
+                onChange: function () { }
+            };
+            var multipleSection = options.multipleSection;
+            var options = $.extend(defaults, options);
+            var _this = this;
+            var id = 0;   //图片id
+            _this.selectImg(options);
+
+
+            //添加图片节点
+            _this.getFileInfo(options.fileBtn, options.maxSize, _this.fileTypeConfig['img'], true, function (data) {
+                var size = ~~(data.size / 1024);
+                var showEle = _this.createMultipleItem(++id, size);
+                multipleSection.append(showEle.item);
+                _this.multipleSizeChange(options.onChange, data, size, 1, true);
+                _this.removeMultipleItem(showEle.remove, function () {
+                    _this.multipleSizeChange(options.onChange, data, size, _this.multipleNum, false)
+                });
+                _this.appendImage(data.result, options.fileSelectBtn, showEle.warp);
+                options.fileBtn.blur();
+            })
+
+            //绑定粘贴事件
+            options.paste === true && this.addPasteListener(function (file) {
+                var showEle = _this.createMultipleItem(++id, file.size);
+                multipleSection.append(showEle.item);
+                _this.readerImage(_this.fileTypeConfig['img'], file, options.maxSize, function (data) {
+                    _this.appendImage(data.result, options.fileSelectBtn, showEle.warp);
+                });
+            });
+
+            //绑定拖拽事件
+            if (options.drag === true && options.dragArea) {
+                _this.addListener(
+                    $.extend(
+                        options,
+                        {
+                            zoom: false,
+                            type: _this.fileTypeConfig['img'],
+                            callback: function (data) {
+                                var showEle = _this.createMultipleItem(++id, data.size);
+                                multipleSection.append(showEle.item);
+                                _this.appendImage(data.result, options.fileSelectBtn, showEle.warp)
+                            }
+                        }
+                    )
+                );
+            }
+            options.uploadBtn && options.uploadBtn.on('click', function () {
+                if (_this.multipleNum <= 0 || _this.allFileSize <= 0) {
+                    return _this.errorNotice('请选择文件!')
+                }
+            });
+
+        },
+        //多选图片改变触发
+        multipleSizeChange: function (fn, data, size, num, add) {
+            fn && fn(
+                $.extend(
+                    data,
+                    {
+                        allFileSize: add ? this.fileSize += size : this.fileSize -= size,
+                        size: size,
+                        multipleNum: add ? this.multipleNum += num : this.multipleNum -= 1
+                    }
+                )
+            );
+        },
+        //移除多图上传的节点
+        removeMultipleItem: function (link, callback) {
+            var _this = this
+            link.on('click', function () {
+                var id = $(this).data('id');
+                var size = $(this).data('size');
+                $('#upload-' + id).remove();
+                callback && callback()
+            })
+        },
+        //创建多图上传的节点
+        createMultipleItem: function (id, size) {
+            var item = $('<li class="multiple-item" id="upload-' + id + '"><div class="mask"><a href="javascript:;" data-id="' + id + '" data-size="' + size || 0 + '">删除</a></div><div class="item-warp hasImg"></div></li>')
+            return {
+                item: item,
+                warp: item.find('.item-warp'),
+                mask: item.find('.mask'),
+                remove: item.find('a')
+            }
+        },
+        //添加拖拽获取焦点时的样式
         addDragAreaStyle: function (ele, className) {
             ele.addClass(className || 'dragActive');
         },
+        //移除拖拽获取焦点时的样式
         removeDragAreaStyle: function (ele, className) {
             ele.removeClass(className || 'dragActive');
         },
@@ -617,10 +756,12 @@
                 _this.stopAll(e);
                 _this.removeDragAreaStyle($dragArea);
                 var files = (e.dataTransfer || e.originalEvent.dataTransfer).files;
-                _this.filterFileInfo(Array.from(files), options.type, options.maxSize, function (data) {
+                _this.filterFileInfo(Array.from(files), options.type, options.maxSize, false, function (data) {
                     if (options.type == _this.fileTypeConfig['img']) {
-                        _this.resetScale(options.range, options.fileArea);
-                        _this.appendImage(data.result, options.fileSelectBtn, options.fileArea);
+                        options.range && _this.resetScale(options.range, options.fileArea);
+                        (function(data){
+                            options.callback && options.callback(data)
+                        })(data)
                         options.zoom === true && _this.bindMouseWheel(options.range, options.fileArea);
                     } else {
                         var formData = {};

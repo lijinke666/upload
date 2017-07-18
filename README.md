@@ -1,6 +1,6 @@
  # LjkUpLoad.js
  
- #### jQuery（文件上传|头像裁剪上传）渣渣插件 ,支持拖拽上传,上传进度<br/>
+ #### jQuery（文件上传|头像裁剪上传）渣渣插件 ,支持拖拽,粘贴上传,上传进度<br/>
  #### a jQuery Head cut upload & file upload plugin Support drag and drop upload and upload progress
 --
 
@@ -51,7 +51,6 @@ localhost:1996
 ## 客户端
 ## Client Examples
 
-
 > Examples
 >> (例子 1)  `clipUpload()`  图片裁剪上传   请参考 `examples/clip_upload_example.html`
 >> (example 1) `clipUpload()` head cut upload , please reference `examples/clip_upload_example.html`
@@ -68,6 +67,7 @@ localhost:1996
         maxSize:param                           //文件大小限制   [type] Number [default] 1024kb  [unit] KB 非必选
         range:param,                            //滑块   [type] Object 非必选
         zoom:param,                             //鼠标是否可以控制图片缩放  [type] Boolean [default] true 非必选
+        paste:param,                            //是否可以粘贴 [type] Boolean ][default] true 非必选
         drag:param,                             //是否可以拖拽上传  [type] Boolean [default] true  非必选        
         dragArea:param,                         //拖拽的区域  [type] Object  如果不需要 这个参数可不传 drag 传 false drag 为 false时 非必选
         dragAreaActiveClassName:param,          //自定义拖拽区域className [type] String [default] 'dragActive'

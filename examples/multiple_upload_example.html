@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>多图上传例子</title>
+    <link rel="stylesheet" href="../libs/ljkUpload.css">
+    <style>
+        .title{
+            font-weight: 500px;
+            text-align: center;
+            margin:20px 0;
+        }
+        .tip{
+            margin:20px 0;
+            color:#ccc;
+        }
+    </style>
+</head>
+<body>
+    <h2 class="title">多图上传Demo,支持拖拽,粘贴</h2>
+    <section class="multiple-section">
+        <ul class="multiple-list">
+
+        </ul>
+        <input type="file" accept="image/*" multiple="true" id="file-btn" class="hidden">
+        <div class="mulitple-setting">
+            <div class="status">选中 <span class="num">0</span> 张图片,共  <span class="size">0</span> kb.</div>
+            <div class="btns">
+                <button class="btn btn-blue upload-select-btn">点击添加图片</button>
+                <button class="btn btn-primary upload-upload-btn">开始上传</button>
+            </div>
+        </div>
+    </section>
+</body>
+<script src="../libs/jquery.min.js"></script>
+<script src="../libs/ljkUpload.js"></script>
+<script>
+    $(function(){
+        var ljkupload = new LjkUpload('.multiple-section')
+        ljkupload.multipleUpload({
+            fileBtn:$('#file-btn'),
+            fileSelectBtn:$('.upload-select-btn'),
+            uploadBtn:$('.upload-upload-btn'),
+            multipleSection:$('.multiple-list'),
+            maxSize:1024,
+            drag:true,       //支持拖拽      默认true   
+            paste:true,       //是否支持粘贴  默认 true
+            dragArea:$('.multiple-section') ,          //如果设置drag 为 true 需要设置响应拖拽的区域  
+            dragAreaActiveClassName:"multiple-area-active",                  //自定义拖拽区域 active样式            
+            onChange:function(data){
+                console.log(data);
+                $('.size').html(data.allFileSize)
+                $('.num').html(data.multipleNum)
+            }
+        })
+    })
+</script>
+</html>
