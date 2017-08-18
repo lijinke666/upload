@@ -4,7 +4,7 @@
  #### a jQuery Head cut upload & file upload plugin Support drag and drop upload and upload progress
 --
 
-[在线DEMO](https://lijinke666.github.io/LjkUpLoad/.js)
+[在线DEMO](https://lijinke666.github.io/LjkUpLoad.js/)
 
 ##### 如果你需要一个完整的例子 包括后端 请：
 ##### Example : If you need to look at the complete example, please run :
