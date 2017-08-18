@@ -18,6 +18,99 @@ body{
     background-color: rgba(0,0,0,.2) !important;
     transition:border,background-color .3s
 }
+.multiple-section{
+    width:800px;
+    min-height:400px;
+    margin:0 auto;
+    display: flex;
+    border:3px dashed #e6e6e6;
+    padding: 20px;
+    position: relative;
+    transition: border .3s;
+}
+.multiple-section .mulitple-setting .status{
+    margin-left: 20px;
+}
+/* 这一段样式参考了百度 web Uploader*/
+.multiple-section .mulitple-setting{
+    position: absolute;
+    bottom:0;
+    left:0;
+    width:100%;
+    height:60px;
+    border-top:1px solid #dcdcdc;
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+    z-index: 99;
+}
+.multiple-section .mulitple-setting .btns{
+    position: absolute;
+    right:20px;
+    top:20px;
+}
+.multiple-section .mulitple-setting .upload-select-btn{
+    margin:0 10px;
+}
+.multiple-list{
+    list-style: none;
+    margin:0;
+    padding: 0;
+}
+.multiple-list .multiple-item{
+    width:110px;
+    height:110px;
+    text-align: center;
+    position: relative;
+    display: initial;
+    float: left;
+    overflow: hidden;
+    margin:0 8px 20px 0;
+}
+.multiple-list .item-warp{
+    position: relative;
+    z-index: 2;
+    width:110px;
+    height:110px;
+    line-height: 110px;
+    overflow: hidden;
+    vertical-align: middle;
+    transform-origin: 50% 50%;
+    -webkit-transition: .3 ease-in-out;
+    -moz-transition: .3 ease-in-out;
+    transition: .3 ease-in-out;
+}
+.multiple-list .multiple-item:hover .mask{
+    top:0;
+}
+.multiple-list .multiple-item img{
+    width:100%;
+    height:100%;
+}
+.multiple-list .multiple-item .mask{
+    position: absolute;
+    z-index: 100;
+    left:0;
+    top:-30px;;
+    background: rgba(0,0,0,.5);
+    height:30px;
+    line-height: 30px;
+    text-align: center;
+    color:#fff;
+    font-size: 14px;
+    transition:  all .3s;
+}
+.multiple-list .multiple-item .mask a{
+    display: block;
+    width:100%;
+    height:100%;
+    color:#fff;
+    font-size: 12px;
+    text-decoration:none;
+}
+.multiple-area-active{
+    border:3px dashed #444;
+}
 aside{
     display: flex;
     justify-content: space-around;
