@@ -1,9 +1,7 @@
- # upload.js
- 
- #### jQuery（文件上传|图片裁剪上传）渣渣插件 ,支持拖拽,粘贴上传,上传进度<br/>
---
+ # upload
+ jQuery（文件上传|图片裁剪上传）渣渣插件 ,支持拖拽,粘贴上传,上传进度
 
-[在线DEMO](https://lijinke666.github.io/upload.js/)
+[在线DEMO](https://lijinke666.github.io/upload/)
 
 ## API
 ```
@@ -30,14 +28,14 @@ upload.removeLoading()
 
 ## 本地开发
 ```
-git clone https://github.com/lijinke666/upload.js.git
+git clone https://github.com/lijinke666/upload.git
 npm install
 npm start
 ```
 
 ## 预览 
 
-![example](https://github.com/lijinke666/LjkUpLoad/blob/master/ljkUpload.gif)
+![example](https://github.com/lijinke666/upLoad/blob/master/example.gif)
 
 
 ## 如何使用 ?
@@ -62,7 +60,7 @@ npm start
 ## 示例
 > (例子 1)  `clipUpload()`  图片裁剪上传   请参考 `examples/clip_upload_example.html`
 
-> 在线预览 : [https://lijinke666.github.io/upload.js/examples/clip_upload_example.html](https://lijinke666.github.io/upload.js/examples/clip_upload_example.html)
+> 在线预览 : [https://lijinke666.github.io/upload/examples/clip_upload_example.html](https://lijinke666.github.io/upload/examples/clip_upload_example.html)
 
 ```javascript
     var upload = new Upload($(rootElement);
@@ -92,7 +90,7 @@ npm start
 
 > (例子 2)  `fileUpload()`  文件上传（带进度条功能）  请参考 `examples/file_upload_example.html`
 
-> 在线预览 : [https://lijinke666.github.io/upload.js/examples/file_upload_example.html](https://lijinke666.github.io/upload.js/examples/file_upload_example.html)
+> 在线预览 : [https://lijinke666.github.io/upload/examples/file_upload_example.html](https://lijinke666.github.io/upload/examples/file_upload_example.html)
 
 ```javascript
      var upload = new Upload($(rootElement);
@@ -121,7 +119,7 @@ npm start
      
 ```
 
-### 默认函数内部消息提示 使用 `notice()` 如果你需要自定义 可以在实例化的时候配置
+##### 默认函数内部消息提示 使用 `notice()` 如果你需要自定义 可以在实例化的时候配置
 > 以 `layer` 弹窗库 为例
 ```javascript
     var upload = new Upload($(".root"),{
