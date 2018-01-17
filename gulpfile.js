@@ -7,7 +7,7 @@ const gulp = require('gulp'),
     uglify = require('gulp-uglify');
 
 gulp.task('cssMin',function(){
-    gulp.src('./libs/ljkUpload.css')
+    gulp.src('./libs/upload.css')
         .pipe(rev())
         .pipe(auto({
             browsers: ['last 2 versions', 'Android >= 4.0'],
@@ -26,7 +26,7 @@ gulp.task('cssMin',function(){
 
 
 gulp.task('jsMin',function(){
-    gulp.src('./libs/ljkUpload.js')
+    gulp.src('./libs/upload.js')
         .pipe(uglify())
         .pipe(rename({suffix:'.min'}))
         .pipe(gulp.dest('./libs'))

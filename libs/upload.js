@@ -1,13 +1,15 @@
 /**
  * Created by jinle.li on 2016/7/13.
- * By: 李金珂小朋友
- * Github: https://github.com/lijinke666
+ * @name upload.js
+ * @author Jinke.Li  https://github.com/lijinke666
  * 图片裁剪 & 文件上传 小插件,
  * 支持拖拽,粘贴,上传进度
+ * 代码为早期编写,十分丑陋,仅供学习玩耍
  * v 0.6.0
- *  ：）
+ *  : )
  */
-(function (win, $) {
+
+;(function (win, $) {
     /**
      * 
      * @param {Object} root  入口容器
@@ -15,7 +17,7 @@
      * message.success
      * message.error
      */
-    var LjkUpload = function (root, message) {
+    var Upload = function (root, message) {
         this.element = root;
         var defaultsMessage = {
             notice: this.notice
@@ -23,13 +25,16 @@
         this.message = $.extend(defaultsMessage, message);
         this.errorNotice = this.message.notice;
     };
-    LjkUpload.prototype = {
+    Upload.prototype = {
         files: null,
         scale: 1.0,          //缩放比例
         maxScale: 3.0,        //最大缩放
         range: 0.05,          //每次缩放的量
         fileSize: 0,           //多图上传 所有文件的大小
         multipleNum: 0,         //多图上传 文件个数
+        mouseOffsetX: 0,
+        mouseOffsetY: 0,
+        isDown:false,
         fileTypeConfig: {
             "img": "图片",
             "file": "文件"
@@ -127,15 +132,13 @@
                 return
             }
             var isPc = this.isPc;
-            var mouseOffsetX = 0,
-                mouseOffsetY = 0,
-                isDown = false;
+            var _this = this
             //按下
             options.ele.on(isPc ? "mousedown" : "touchstart", function (e) {
                 var touche = isPc ? e : (e.originalEvent.targetTouches[0] || e.targetTouches[0]);
-                isDown = true;
-                mouseOffsetX = touche.pageX - ~~(this.getBoundingClientRect(options.ele.get(0)).left);
-                mouseOffsetY = touche.pageY - ~~(this.getBoundingClientRect(options.ele.get(0)).top);
+                _this.isDown = true;
+                _this.mouseOffsetX = touche.pageX - ~~(this.getBoundingClientRect(options.ele.get(0)).left);
+                _this.mouseOffsetY = touche.pageY - ~~(this.getBoundingClientRect(options.ele.get(0)).top);
             });
             //离开
             options.ele.on(isPc ? "mousemove" : "touchmove", function (e) {
@@ -143,9 +146,9 @@
                 var mouseX = 0,
                     mouseY = 0;
                 var touche = isPc ? e : (e.originalEvent.touches[0] || e.originalEvent.changedTouches[0] || e.targetTouches[0]);
-                if (isDown === true) {
-                    mouseX = touche.pageX - mouseOffsetX;
-                    mouseY = touche.pageY - mouseOffsetY;
+                if (_this.isDown === true) {
+                    mouseX = touche.pageX - _this.mouseOffsetX;
+                    mouseY = touche.pageY - _this.mouseOffsetY;
                     options.ele.css({
                         top: mouseY + "px",
                         left: mouseX + "px"
@@ -155,12 +158,12 @@
             //弹起
             options.ele.on(isPc ? "mouseup" : "touchend", function (e) {
                 e.preventDefault();
-                isDown = false;
+                _this.isDown = false;
             });
             //移出
             options.ele.on(isPc ? "mouseout" : "touchcancel", function (e) {
                 e.preventDefault();
-                isDown = false;
+                _this.isDown = false;
             });
         },
 
@@ -204,24 +207,24 @@
         },
         //添加图片节点
         appendImage: function (result, fileSelectBtn, showEle, callback) {
-            this.loadImage(result).then(function(image) {
+            this.loadImage(result).then(function (image) {
                 fileSelectBtn && fileSelectBtn.addClass("success-linear");
                 showEle.html('').append(image).removeClass("hasImg");
                 callback && callback(result);
-            }).catch(function(e) {
+            }).catch(function (e) {
                 this.errorNotice('添加图片节点出错!')
                 throw new Error(e);
             })
         },
         //绑定鼠标滚轮事件
         bindMouseWheel: function (rangeEle, showEle) {
-            var _this = this;
-            var scale = _this.scale,
+            var _this = this,
                 maxScale = _this.maxScale,
                 range = _this.range;
 
             //取整 parseInt ||  >>0  ||  ~~ 都可以
             showEle.get(0).onmousewheel = function (e) {
+                var scale = _this.scale;
                 var target,
                     ee = e || window.event;
                 target = ee.delta ? ee.delta : ee.wheelDelta;    //火狐有特殊
@@ -337,13 +340,13 @@
         },
         //异步加载图片
         loadImage: function (src) {
-            return new Promise(function(res, rej)  {
+            return new Promise(function (res, rej) {
                 var img = new Image();
                 img.src = src;
-                img.onload = function() {
+                img.onload = function () {
                     res(img);
                 };
-                img.onerror = function() {
+                img.onerror = function () {
                     rej(e);
                 }
             })
@@ -365,17 +368,18 @@
             options.range.on(isPc ? "mousemove " : "touchmove", function (e) {
                 var _this_ = $(this);
                 scale = Number(_this_.val());
-                options.range && options.range.val(scale);
-                _this.ToScale(options.ele, scale);
+                changeRange(scale);
             }).prev().on(isPc ? "mouseover " : "touchstart", function () {
                 scale -= 0.01;
-                options.range && options.range.val(scale);
-                _this.ToScale(options.ele, scale)
+                changeRange(scale);
             }).next().next().on(isPc ? "mouseover" : "touchstart", function () {
                 scale += 0.01;
+                changeRange(scale);
+            });
+            var changeRange = function (scale) {
                 options.range && options.range.val(scale);
                 _this.ToScale(options.ele, scale);
-            });
+            }
         },
 
         /**
@@ -391,6 +395,7 @@
                 "-o-transform": "scale(" + scale + ")",
                 "transform": "scale(" + scale + ")"
             })
+            this.scale = scale
         },
         /**
          * 裁剪图片
@@ -618,12 +623,12 @@
          * 绑定 remove , change ,append 三个事件
          * 这里写晕了 代码的耦合有点严重 :(
          */
-        bindmultipleEvent: function(id,data,fileBtn,fileSelectBtn,multipleSection,onChange){
+        bindmultipleEvent: function (id, data, fileBtn, fileSelectBtn, multipleSection, onChange) {
             var _this = this,
-                 size = ~~(data.size / 1024);
+                size = ~~(data.size / 1024);
             var showEle = _this.createMultipleItem(++id, size);
             multipleSection.append(showEle.item);
-            _this.appendImage(data.result,fileSelectBtn, showEle.warp);
+            _this.appendImage(data.result, fileSelectBtn, showEle.warp);
             _this.multipleSizeChange(onChange, data, size, 1, true);
             _this.removeMultipleItem(showEle.remove, function () {
                 _this.multipleSizeChange(onChange, data, size, _this.multipleNum, false);
@@ -637,7 +642,7 @@
          * @param {Boolean} paste  是否支持粘贴 默认 true
          * @param {Object} multipleSection 图片放置的容器 默认 '.multiple-list'
          * @param {String} dragAreaActiveClassName  拖拽获取焦点的容器样式 默认 'multiple-area-active'
-         * @param {Object} onChange  图片数量改变回调 返回图片信息
+         * @param {Function} onChange  图片数量改变回调 返回图片信息
          */
         multipleUpload: function (options) {
             var defaults = {
@@ -659,13 +664,13 @@
 
             // //添加图片节点
             _this.getFileInfo(options.fileBtn, options.maxSize, _this.fileTypeConfig['img'], true, function (data) {
-                _this.bindmultipleEvent(id,data,options.fileBtn,options.fileSelectBtn,multipleSection,options.onChange);
+                _this.bindmultipleEvent(id, data, options.fileBtn, options.fileSelectBtn, multipleSection, options.onChange);
             });
 
             //绑定粘贴事件
             options.paste === true && this.addPasteListener(function (file) {
                 _this.readerImage(_this.fileTypeConfig['img'], file, options.maxSize, function (data) {
-                    _this.bindmultipleEvent(id,data,options.fileBtn,options.fileSelectBtn,multipleSection,options.onChange); 
+                    _this.bindmultipleEvent(id, data, options.fileBtn, options.fileSelectBtn, multipleSection, options.onChange);
                 });
             });
 
@@ -679,7 +684,7 @@
                             type: _this.fileTypeConfig['file'],
                             //这里有点耦合了，通过callback 传代码到 addListener中
                             callback: function (data) {
-                                _this.bindmultipleEvent(id,data,options.fileBtn,options.fileSelectBtn,multipleSection,options.onChange); 
+                                _this.bindmultipleEvent(id, data, options.fileBtn, options.fileSelectBtn, multipleSection, options.onChange);
                             }
                         }
                     )
@@ -711,8 +716,8 @@
             var _this = this;
             link.on('click', function () {
                 var $this = $(this),
-                     id = $(this).data('id'),
-                     size = $(this).data('size');
+                    id = $(this).data('id'),
+                    size = $(this).data('size');
                 $('#upload-' + id).remove();
                 callback && callback();
             })
@@ -720,7 +725,7 @@
         //创建多图上传的节点
         createMultipleItem: function (id, size) {
             size = !!size || 0
-            var item = $('<li class="multiple-item" id="upload-' + id + '"><div class="mask"><a href="javascript:;" data-id="' + id + '" data-size="'+size+'">删除</a></div><div class="item-warp hasImg"></div></li>')
+            var item = $('<li class="multiple-item" id="upload-' + id + '"><div class="mask"><a href="javascript:;" data-id="' + id + '" data-size="' + size + '">删除</a></div><div class="item-warp hasImg"></div></li>')
             return {
                 item: item,
                 warp: item.find('.item-warp'),
@@ -792,7 +797,7 @@
             //放下
             dragArea.addEventListener('drop', function (e) {
                 _this.stopAll(e);
-                _this.removeDragAreaStyle($dragArea,dragAreaClassName);
+                _this.removeDragAreaStyle($dragArea, dragAreaClassName);
                 var files = (e.dataTransfer || e.originalEvent.dataTransfer).files;
                 _this.filterFileInfo(Array.from(files), options.type, options.maxSize, false, function (data) {
                     if (options.type == _this.fileTypeConfig['img']) {
@@ -827,5 +832,5 @@
     };
     //自执行函数 不暴露成员
     //挂载在 window全局对象 不然访问不到
-    win['LjkUpload'] = LjkUpload;
+    win['Upload'] = Upload;
 })(window, jQuery);

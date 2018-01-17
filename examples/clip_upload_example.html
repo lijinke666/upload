@@ -5,7 +5,7 @@
     <title>裁剪上传例子</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="format-detection" content="telephone=no"/>
-    <link rel="stylesheet" href="../libs/ljkUpload.min.css">
+    <link rel="stylesheet" href="../libs/upload.min.css">
     <style>
        h2.title{
            font-weight: 500;
@@ -39,12 +39,12 @@
 </section>
 </body>
 <script src="../libs/jquery.min.js"></script>
-<script src="../libs/ljkUpload.min.js"></script>
+<script src="../libs/upload.min.js"></script>
 <script>
     $(function () {
-        var ljkUpload = new LjkUpload($(".headImg-popup"));
+        var upload = new Upload($(".headImg-popup"));
 
-        ljkUpload.clipUpload({
+        upload.clipUpload({
             fileBtn:$("input[type='file']"),          //file 文件按钮
             fileSelectBtn:$(".upload-select-btn"),    //美化后文件选择按钮   可不填
             uploadBtn:$(".upload-upload-btn"),        //文件上传按钮
@@ -65,7 +65,7 @@
                     dataType:"json",
                     success:function(res){
                         if(res.success)
-                            ljkUpload.notice('上传成功!')
+                        upload.notice('上传成功!')
                     }
                 })
             },

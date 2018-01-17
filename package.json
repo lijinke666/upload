@@ -1,13 +1,13 @@
 {
   "author": "Jinke.Li",
   "license": "MIT",
-  "main": "libs/ljkUpload.min.js",
+  "main": "libs/upload.min.js",
   "description": "Jquery (fileUpload & imgClipUpload) Plugin ",
-  "name": "LjkUpload.js",
+  "name": "upload",
   "version": "0.7.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/lijinke666/LjkUpLoad"
+    "url": "https://github.com/lijinke666/upLoad"
   },
   "keywords": [
     "jquery",

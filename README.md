@@ -1,64 +1,72 @@
- # LjkUpLoad.js
+ # upload.js
  
- #### jQuery（文件上传|头像裁剪上传）渣渣插件 ,支持拖拽,粘贴上传,上传进度<br/>
- #### a jQuery Head cut upload & file upload plugin Support drag and drop upload and upload progress
+ #### jQuery（文件上传|图片裁剪上传）渣渣插件 ,支持拖拽,粘贴上传,上传进度<br/>
 --
 
-[在线DEMO](https://lijinke666.github.io/LjkUpLoad.js/)
+[在线DEMO](https://lijinke666.github.io/upload.js/)
 
-##### 如果你需要一个完整的例子 包括后端 请：
-##### Example : If you need to look at the complete example, please run :
+## API
 ```
+ var upload = new Upload(root);
+ 
+ //图片裁剪上传
+ upload.clipUpload(options)
+
+ //文件上传
+ upload.fileUpload(options)
+
+//显示加载提示
+upload.loading(msg)
+
+//移除加载提示
+upload.removeLoading()   
+
+ //消息提示
+ upload.notice()
+ 
+//预览图片
+ upload.showImage()
+```
+
+## 本地开发
+```
+git clone https://github.com/lijinke666/upload.js.git
 npm install
-```
-或者 (or)
-```
-yarn
-```
-然后 (then)
-```
 npm start
 ```
 
-open your bower
-```
-localhost:1996
-```
-
-##### 预览 preview
+## 预览 
 
 ![example](https://github.com/lijinke666/LjkUpLoad/blob/master/ljkUpload.gif)
 
-#### 然后访问 (Then open)
 
-##### open
->
->  1.图片裁剪上传(head cut upload example) http://localhost:1996/examples/clip_upload_example.html <br/>
->  2.文件裁剪上传(file upload example) http://localhost:1996/examples/file_upload_example.html
-  
-  
-#### 垃圾源码中我写了很多注释,大家一起学习进步 :) 。。逃(
-#### I hope you can study and make progress together
-
-
-#### How to Use ?
+## 如何使用 ?
 
 ```javascript
-<link rel="stylesheet" href="../libs/ljkUpload.min.css">
-<script src="../libs/ljkUpload.min.js"></script>
+<link rel="stylesheet" href="../libs/upload.min.css">
+<body>
+<div class="headImg-popup">
+    ...
+</div>
+</body>
+<script src="../libs/upload.min.js"></script>
+<script>
+        var upload = new Upload($(".headImg-popup"));
+
+        upload.clipUpload({
+            ...
+        })
+</script>
 ```
 
-## 客户端
-## Client Examples
+## 示例
+> (例子 1)  `clipUpload()`  图片裁剪上传   请参考 `examples/clip_upload_example.html`
 
-> Examples
->> (例子 1)  `clipUpload()`  图片裁剪上传   请参考 `examples/clip_upload_example.html`
->> (example 1) `clipUpload()` head cut upload , please reference `examples/clip_upload_example.html`
->>>
+> 在线预览 : [https://lijinke666.github.io/upload.js/examples/clip_upload_example.html](https://lijinke666.github.io/upload.js/examples/clip_upload_example.html)
 
 ```javascript
-    var ljkUpload = new LjkUpload($(rootElement);
-    ljkUpload.clipUpload({
+    var upload = new Upload($(rootElement);
+    upload.clipUpload({
         fileBtn:param,                          //file 文件按钮   [type] Object  必选
         fileSelectBtn:param,                    //美化后的选择按钮  [type] Object  非必选
         uploadBtn:param,                        //文件上传按钮    [type] Object  必选
@@ -67,8 +75,8 @@ localhost:1996
         maxSize:param                           //文件大小限制   [type] Number [default] 1024kb  [unit] KB 非必选
         range:param,                            //滑块   [type] Object 非必选
         zoom:param,                             //鼠标是否可以控制图片缩放  [type] Boolean [default] true 非必选
-        paste:param,                            //是否可以粘贴 [type] Boolean ][default] true 非必选
-        drag:param,                             //是否可以拖拽上传  [type] Boolean [default] true  非必选        
+        paste:param,                            //是否可以图片粘贴到裁剪区域 [type] Boolean ][default] true 非必选
+        drag:param,                             //是否可以将图片拖入裁剪区域  [type] Boolean [default] true  非必选        
         dragArea:param,                         //拖拽的区域  [type] Object  如果不需要 这个参数可不传 drag 传 false drag 为 false时 非必选
         dragAreaActiveClassName:param,          //自定义拖拽区域className [type] String [default] 'dragActive'
         success:function( image ){              //裁剪成功callback  返回base64图片 [type] Function  非必选
@@ -82,13 +90,13 @@ localhost:1996
 ```
 
 
->> (例子 2)  `fileUpload()`  文件上传（带进度条功能）  请参考 `examples/file_upload_example.html`
->> (example 2) `fileUpload()` file upload( support progress) , please reference `examples/file_upload_example.html`
->>>
+> (例子 2)  `fileUpload()`  文件上传（带进度条功能）  请参考 `examples/file_upload_example.html`
+
+> 在线预览 : [https://lijinke666.github.io/upload.js/examples/file_upload_example.html](https://lijinke666.github.io/upload.js/examples/file_upload_example.html)
 
 ```javascript
-     var ljkUpload = new LjkUpload($(rootElement);
-     ljkUpload.fileUpload({
+     var upload = new Upload($(rootElement);
+     upload.fileUpload({
          url:fetchUrl,                                       //后端接口地址  The back-end interface address  [type] String  is required
          form:param,                                         //表单   form  [type] Object is required
          fileBtn:param,                                      //文件file按钮   your file btn [type] Object is required
@@ -113,69 +121,17 @@ localhost:1996
      
 ```
 
-
-
->> 如果你只需要图片预览  请使用 `showImage()`    请参考 `examples/show_images_example.html`
->> if you only need Preview picture
->>>
+### 默认函数内部消息提示 使用 `notice()` 如果你需要自定义 可以在实例化的时候配置
+> 以 `layer` 弹窗库 为例
 ```javascript
-   var ljkUpload = new LjkUpload($(".root"));
-    ljkUpload.showImage({
-        fileBtn:param,              //file 文件按钮   [type] Object  必选
-        fileSelectBtn:param,        //美化后的选择按钮 [type] Object 非必选
-        showEle: param,             //图片展示区域    [type] Object    必选
-        maxSize: param,             //图片大小 (KB)   [type] Number [default] 1024kb  非必选
-        zoom:param,                 //是否允许鼠标滚轮对图片进行缩放  [type] Boolean [default] false 非必选
-        callback:function(data){    //回调      返回base64图片 [type] Function 非必选
-            //base64 图片
-            console.log(data);
-        }
-    })
-```
-
-***
-
->> 如果你需要弹窗提示 使用  `notice()`  请参考 `examples/notice_example.html`
->> If you need a notice 
->>>   
-```javascript
-    /**
-        *
-        * @param {String} msg             提示信息    
-        * @param {Number} showTime        显示时间    [default] 1500 ms
-        * @param {Function} onHideHandler   回调函数
-        * @param {String} title            标题   [default] '提示'
-        */
-    ljkUpload.notice(msg,showTime,onHideHandler,title)
-```
-
-#### 默认函数内部消息提示 使用 `notice()` 如果你需要自定义 可以在实例化的时候配置
-#### Default function internal message prompt use `notice()` If you need to customize it 
-##### 以 `layer` 弹窗库 为例
-##### Take `layer` as an example
-```javascript
-    var ljkUpload = new LjkUpload($(".root"),{
+    var upload = new Upload($(".root"),{
         notice:layer.msg,
     });
 ```
 
+## License
+[MIT](https://github.com/lijinke666/upload/blob/master/LICENCE)
 
 
->> 如果你需要加载动画 使用  `loading()` 
->> If you need a loading prompt
->>>   
-```javascript
-    /**
-    * @param {String} msg             文字
-    */
-    ljkUpload.loading(msg)
-    ljkupload.removeLoading()    //移除加载动画
-```
 
-    
-#### 服务端
-server.js
-提供一个 服务端接受 base64图片的例子
-##### imageClip.html 是一个原生js版本的图片裁剪例子 =>>> to NaNa :)
 
-#### 欢迎大家提bug到issue

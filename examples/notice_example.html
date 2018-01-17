@@ -5,7 +5,7 @@
     <title>提示弹窗例子</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="format-detection" content="telephone=no"/>
-    <link rel="stylesheet" href="../libs/ljkUpload.min.css">
+    <link rel="stylesheet" href="../libs/upload.min.css">
 
 </head>
 <body>
@@ -15,14 +15,14 @@
 </section>
 </body>
 <script src="../libs/jquery.min.js"></script>
-<script src="../libs/ljkUpload.min.js"></script>
+<script src="../libs/upload.min.js"></script>
 <script>
     //预览图片
     $(function () {
-        var ljkUpload = new LjkUpload($(".root"));
+        var upload = new Upload($(".root"));
 
         $('.btn-notice').on('click',function(){
-            ljkUpload.notice('李金珂真帅',2000,function(){
+            upload.notice('李金珂真帅',2000,function(){
 
             },'自定义标题')
         })

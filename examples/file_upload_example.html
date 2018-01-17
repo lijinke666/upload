@@ -5,7 +5,7 @@
     <title>文件上传例子</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="format-detection" content="telephone=no"/>
-    <link rel="stylesheet" href="../libs/ljkUpload.min.css">
+    <link rel="stylesheet" href="../libs/upload.min.css">
     <style>
         body,html{
             min-height:100%;
@@ -26,7 +26,7 @@
     </style>
 </head>
 <body>
-<h2 class="title">裁剪上传Demo,支持拖拽</h2>
+<h2 class="title">文件上传带进度条Demo,支持拖拽</h2>
 <div class="root">
      <form method="post" name="upload-file-form" encType="multipart/form-data" className="upload-file-form">
         <p>
@@ -47,13 +47,13 @@
 </div>
 </body>
 <script src="../libs/jquery.min.js"></script>
-<script src="../libs/ljkUpload.min.js"></script>
+<script src="../libs/upload.min.js"></script>
 <script>
     var fetchUrl = "/examples/uploadFile"
     $(function () {
-        var ljkUpload = new LjkUpload($(".root"));
+        var upload = new Upload($(".root"));
 
-        ljkUpload.fileUpload({
+        upload.fileUpload({
             url:fetchUrl,                                    //后端请求地址
             form:$('form[name="upload-file-form"]'),         //表单
             fileBtn:$('.file-btn'),                           //文件按钮
@@ -72,7 +72,7 @@
             },
             success:function(result){                       //成功回调  返回后端的数据
                 console.log(result)
-                ljkUpload.notice('上传成功!')
+                upload.notice('上传成功!')
             },
             error:function(e){                            //错误回调
                 console.log('error',e)

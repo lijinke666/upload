@@ -5,7 +5,7 @@
     <title>预览图片例子</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="format-detection" content="telephone=no"/>
-    <link rel="stylesheet" href="../libs/ljkUpload.min.css">
+    <link rel="stylesheet" href="../libs/upload.min.css">
     <style>
         .img-container{
             width:200px;
@@ -27,18 +27,19 @@
 </section>
 </body>
 <script src="../libs/jquery.min.js"></script>
-<script src="../libs/ljkUpload.min.js"></script>
+<script src="../libs/upload.min.js"></script>
 <script>
     //预览图片
     $(function () {
-        var ljkUpload = new LjkUpload($(".root"));
-        ljkUpload.showImage({
+        var upload = new Upload($(".root"));
+        upload.showImage({
             fileBtn:$('.file-btn'),               //文件按钮
             showEle:$('.img-container'),          //显示区域
             maxSize:1024,                         //[type] Number [default] 1024 [unit] kb
             zoom:false,                           //图片可不可以缩放 [type] Boolean [default] false
             callback:function(data){
                 //base64 图片
+                upload.notice('预览成功')
                 console.log(data);
             }
         })
