@@ -4,7 +4,7 @@
 [在线DEMO](https://lijinke666.github.io/upload/)
 
 ## API
-```
+```js
  var upload = new Upload(root);
  
  //图片裁剪上传
